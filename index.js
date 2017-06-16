@@ -48,6 +48,21 @@ app.get('/test', function(req, res) {
 app.get('/booking', function(req, res) {
   res.sendFile(path.join(__dirname, '/public/booking/index.html'));
 });
+app.get('/scripts', function(req, res) {
+  res.sendFile(path.join(__dirname, '/public/booking/scripts'));
+});
+app.get('/images', function(req, res) {
+  res.sendFile(path.join(__dirname, '/public/booking/images'));
+});
+app.get('/fonts', function(req, res) {
+  res.sendFile(path.join(__dirname, '/public/booking/fonts'));
+});
+app.get('/external', function(req, res) {
+  res.sendFile(path.join(__dirname, '/public/booking/external'));
+});
+app.get('/css', function(req, res) {
+  res.sendFile(path.join(__dirname, '/public/booking/css'));
+});
 
 var port = process.env.PORT || 1337;
 var httpServer = require('http').createServer(app);
