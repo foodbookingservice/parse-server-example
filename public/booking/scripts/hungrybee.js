@@ -3,13 +3,13 @@
 var appid = "oVYLOizsuLXxCRucXmrgWF6q0OjlXc9d1fXfBDmU";
 var jskey = "DlJPmV5Q3XQ3U2ykpqJjXauadeEkOESicvhsHJ40"
 **/
-/** prod**/
+/** prod
 var appid = "9O3uQHctMnz86F6m3lifIlwKrMGONwlUjO2OL4uf";
 var jskey = "nbkR1HRcOkFEa4J73rPsWvaZsqa6O6BHI0GSGClz"
-
-
-console.log("Parse.initialize, heroku");
+*/
 //Parse.initialize(appid, jskey);
 
+
+var appid = "9tWLecLJLoApOL6sMDaP";
 Parse.initialize(appid);
-Parse.serverURL = 'http://hungrybeeprod.herokuapp.com/parse'
+Parse.serverURL = 'http://foodbooking.herokuapp.com/parse'

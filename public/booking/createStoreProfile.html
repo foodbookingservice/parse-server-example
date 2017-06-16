@@ -299,7 +299,7 @@
 	w3IncludeHTML();
 	</script>
 		
-<h1>新增店家/餐點</h1>
+<h1>新增供應者/餐點</h1>
 
 <form name="uploadForm">
 	<table border=0>
@@ -308,7 +308,7 @@
 				<table border=0>
 					<tr>
 						<td colspan="2">
-							<input type="radio" id="className" name="className" value="HBFoodStore"> 新增店家
+							<input type="radio" id="className" name="className" value="HBFoodStore"> 新增供應者
 						</td>
 					</tr>
 					<tr>
@@ -330,7 +330,7 @@
 						</td>
 					</tr>
 					<tr>
-						<td>類別:</td>
+						<td>主要販售類別:</td>
 						<td>
 							<select name="storeCode" id="storeCode">
 								<option value="D">飲料類</option>
@@ -345,7 +345,7 @@
 					<tr>
 						<td><input type="hidden" name="printer" id="printer" placeholder="非必填" value=""></td>
 						<td>
-							<input type="checkbox" name="callBeeService" value="yes">只使用外送服務
+							<input type="hidden" name="callBeeService" value="yes">
 						</td>
 					</tr>
 					<tr>
@@ -360,16 +360,16 @@
 						<td><input type="text" size="40" name="address" id="address" value=""></td>
 					</tr>
 					<tr>
-						<td>地址備註:</td>
+						<td>&nbsp;</td>
 						<td><input type="text" size="40" name="addressNote" id="addressNote" placeholder="例:7-11旁" value=""></td>
 					</tr>
 					<tr>
-						<td>銀行代號:</td>
-						<td><input type="text" size="10" name="bankCode" id="bankCode" value=""></td>
+						<td>&nbsp;</td>
+						<td><input type="hidden" size="10" name="bankCode" id="bankCode" value=""></td>
 					</tr>
 					<tr>
-						<td>銀行帳號:</td>
-						<td><input type="text" size="20" name="bankAccount" id="bankAccount" value=""></td>
+						<td>&nbsp;</td>
+						<td><input type="hidden" size="20" name="bankAccount" id="bankAccount" value=""></td>
 					</tr>
 					<tr>
 						<td>公休日</td>

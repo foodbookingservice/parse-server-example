@@ -70,8 +70,10 @@
             //Parse.initialize("9O3uQHctMnz86F6m3lifIlwKrMGONwlUjO2OL4uf", "nbkR1HRcOkFEa4J73rPsWvaZsqa6O6BHI0GSGClz");
 
             //test
-            Parse.initialize("oVYLOizsuLXxCRucXmrgWF6q0OjlXc9d1fXfBDmU", "DlJPmV5Q3XQ3U2ykpqJjXauadeEkOESicvhsHJ40");
-
+            //Parse.initialize("oVYLOizsuLXxCRucXmrgWF6q0OjlXc9d1fXfBDmU", "DlJPmV5Q3XQ3U2ykpqJjXauadeEkOESicvhsHJ40");
+			var appid = "9tWLecLJLoApOL6sMDaP";
+			Parse.initialize(appid);
+			Parse.serverURL = 'http://foodbooking.herokuapp.com/parse'
         }
 
         var init = function () {
@@ -113,7 +115,7 @@
                 },
                 error: function (user, error) {
 
-                    console.log("The login failed. Check error to see why.");
+                    console.log("The login failed. Check error to see why." + error);
                     alert("The login failed. Check error to see why.");
                     // The login failed. Check error to see why.
                 }
