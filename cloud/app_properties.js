@@ -1,25 +1,25 @@
 
 exports.env = function() {
-	return "Prod";	
+	return "Booking";	
 }
 exports.push_env = function() {
 	return "";	
 }
 
 exports.booking_manager = function () {
-	return 	"emma_wang@hungrybee.net";
+	return 	"foodbookingservice@gmail.com";
 }
 
 exports.mail_cc = function () {
-	return "info@hungrybee.net";
+	return "foodbookingservice@gmail.com";
 }
 
 exports.admin_mail = function() {
-	return "order@hungrybee.net";
+	return "foodbookingservice@gmail.com";
 }
 
 exports.error_admin = function() {
-	return "avery_hou@hungrybee.net";
+	return "foodbookingservice@gmail.com";
 }
 
 exports.order_url = function() {
@@ -27,11 +27,11 @@ exports.order_url = function() {
 }
 
 exports.shorten_url = function() {
-	return "https://hungrybeeprod.herokuapp.com/public"; //Heroku
+	return "https://foodbooking.herokuapp.com/public"; //Heroku
 }
 
 exports.order_info = function() {
-	return "http://hungrybee.net/customerservice/orderInfo.html";
+	return "http://foodbooking.herokuapp.com/booking/orderInfo.html";
 }
 
 exports.mock_mode = function() {
