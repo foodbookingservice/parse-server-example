@@ -1,0 +1,123 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<META HTTP-EQUIV="PRAGMA" CONTENT="NO-CACHE">
+<!-- IE可能不見得有效 -->
+<META HTTP-EQUIV="EXPIRES" CONTENT="0">
+<!-- 設定成馬上就過期 -->
+<META HTTP-EQUIV="CACHE-CONTROL" CONTENT="NO-CACHE">
+
+    <script src="scripts/parse-1.6.14.min.js"></script>
+    <script src="scripts/jquery-2.2.0.min.js"></script>
+    <script src="scripts/bootstrap.min.js"></script>
+    <script src="scripts/hbUtility.js"></script>
+    <script src="scripts/hbParseInit.js"></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/jqueryui/1.10.2/jquery-ui.min.js"></script>
+    <script src="scripts/jquery.switchButton.js"></script>
+    <link href="https://code.jquery.com/ui/1.10.4/themes/ui-lightness/jquery-ui.css" rel="stylesheet">
+    <script src="https://code.jquery.com/ui/1.10.4/jquery-ui.js"></script>
+
+    <link href="css/jquery.switchButton.css" rel="stylesheet">
+    <link href="css/main.css" rel="stylesheet">
+    <link href="css/bootstrap.css" rel="stylesheet" />
+    <link href="css/storeManagement.css" rel="stylesheet" />
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.4.0/css/font-awesome.min.css" rel="stylesheet" type="text/css">
+
+    <title></title>
+</head>
+<body id="main">
+ 
+ 	<ul class="nav nav-pills">
+ 		<li role="presentation" class="dropdown"><a href="https://hungrybeedashboard.herokuapp.com/apps/HungryBee/" target=_new>資料庫後台</a></li>
+            
+        <li role="presentation" class="dropdown">
+            <a class="dropdown-toggle" data-toggle="dropdown" href="#" role="button" aria-haspopup="true" aria-expanded="false">
+                訂單查詢 <span class="caret"></span>
+            </a>
+            <ul class="dropdown-menu" aria-labelledby="dropdownMenu1">
+                <li><a href="index.html?mode=id">訂單編號</a></li>
+                <li><a href="index.html?mode=date">訂單日期</a></li>
+            </ul>
+        </li>
+        
+       
+
+        <li role="presentation" class="dropdown">
+            <a class="dropdown-toggle" data-toggle="dropdown" href="#" role="button" aria-haspopup="true" aria-expanded="false">
+                帳單查詢 <span class="caret"></span>
+            </a>
+            <ul class="dropdown-menu" aria-labelledby="dropdownMenu1">
+                <li><a href="storeBill.html">店家帳單</a></li>
+                <li><a href="beeShippingFee.html">小蜜蜂帳單</a></li>
+            </ul>
+        </li>
+
+
+        <li role="presentation" class="dropdown">
+            <a class="dropdown-toggle" data-toggle="dropdown" href="#" role="button" aria-haspopup="true" aria-expanded="false">
+                銀行匯款 <span class="caret"></span>
+            </a>
+            <ul class="dropdown-menu" aria-labelledby="dropdownMenu1">
+                <li><a href="bankTransfer_store.html">店家匯款</a></li>
+                <li><a href="bankTransfer_bee.html">小蜜蜂匯款</a></li>
+            </ul>
+        </li>
+
+        <li role="presentation" class="dropdown active">
+        	<a class="dropdown-toggle" data-toggle="dropdown" href="#" role="button" aria-haspopup="true" aria-expanded="false">
+                店鋪管理 <span class="caret"></span>
+            </a>
+        	<ul class="dropdown-menu" aria-labelledby="dropdownMenu1">
+                <li><a href="storeManagement.html">店鋪管理</a></li>
+                <li><a href="createStoreProfile.html">新增店鋪</a></li>
+                <li><a href="updateStoreProfile.html">更新店鋪圖片</a></li>
+                <li><a href="updateFoodProfile.html">更新餐點圖片</a></li>
+            </ul>
+        </li>
+        
+        <li role="presentation" class="dropdown"><a href="beeManagement.html">小蜜蜂管理</a></li>
+        <li role="presentation" class="dropdown"><a href="activeUserManagement.html">活動紀錄查詢</a></li>
+        <li role="presentation" class="dropdown">
+            <a class="dropdown-toggle" data-toggle="dropdown" href="#" role="button" aria-haspopup="true" aria-expanded="false">
+                其他 <span class="caret"></span>
+            </a>
+            <ul class="dropdown-menu" aria-labelledby="dropdownMenu1">
+                <li><a href="coupon.html" target=_blank>折價卷產生器</a></li>
+                <li><a href="holdOrderTool.html" target=_blank>卡單小幫手</a></li>
+                <li><a href="" onclick="parseLogOut()">登出</a></li>
+            </ul>
+        </li>
+    </ul>
+
+    <script>
+		var currentUser = Parse.User.current();
+		console.log("currentUser not exist:" + (currentUser == null));
+		if(currentUser == null) {
+			window.open("login.html", "_parent", "", true);
+	    } else {
+	    	Parse.User.current().fetch().then(function (currentUser) {
+	    		var isQualify = currentUser.get("qualify");
+
+	            if (!isQualify) {
+	                Parse.User.logOut().then(() => {
+	                    console.log("logOut");
+	                    window.open("login.html", "_parent", "", true);
+	                });
+	            }
+			});
+	    }
+	    
+	    
+	   	function parseLogOut() {
+
+		    Parse.User.logOut().then(() => {
+		        console.log("logOut");
+		        window.open("login.html", "_parent", "", true);
+		    });
+		
+		}
+	    
+    </script>
+</body>
+</html>

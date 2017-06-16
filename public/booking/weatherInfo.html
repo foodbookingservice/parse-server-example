@@ -1,0 +1,186 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+	<META HTTP-EQUIV="PRAGMA" CONTENT="NO-CACHE">
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <script src="scripts/parse-1.6.14.min.js"></script>
+    <script src="hungrybee.js"></script>
+    <script src="scripts/hbParseInit.js"></script>
+    <script src="scripts/hbUtility.js"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.4.0/css/font-awesome.min.css" rel="stylesheet" type="text/css">
+
+    <script src="scripts/jquery-2.2.0.min.js"></script>
+    <script src="scripts/bootstrap.min.js"></script>
+    <link href="css/bootstrap.min.css" rel="stylesheet">
+    <link href="css/bootstrap-theme.min.css" rel="stylesheet">
+
+    <title>小蜜蜂小幫手</title>
+</head>
+<body>
+
+    <ul class="nav nav-pills">
+        <li role="presentation" class="dropdown active">
+            <a class="dropdown-toggle" data-toggle="dropdown" href="#" role="button" aria-haspopup="true" aria-expanded="false">
+                訂單查詢 <span class="caret"></span>
+            </a>
+            <ul class="dropdown-menu" aria-labelledby="dropdownMenu1">
+                <li><a href="index.html?mode=id">訂單編號</a></li>
+                <li><a href="index.html?mode=date">訂單日期</a></li>
+                <li><a href="phoneSearch.html">依訂購人查詢</a></li>
+            </ul>
+            <!--<a href="index.html">訂單查詢</a>-->
+        </li>
+
+        <li role="presentation" class="dropdown">
+            <a class="dropdown-toggle" data-toggle="dropdown" href="#" role="button" aria-haspopup="true" aria-expanded="false">
+                帳單查詢 <span class="caret"></span>
+            </a>
+            <ul class="dropdown-menu" aria-labelledby="dropdownMenu1">
+                <li><a href="storeBill.html">店家帳單</a></li>
+                <li><a href="beeShippingFee.html">小蜜蜂帳單</a></li>
+            </ul>
+
+        </li>
+
+        <li role="presentation" class="dropdown">
+            <a class="dropdown-toggle" data-toggle="dropdown" href="#" role="button" aria-haspopup="true" aria-expanded="false">
+                銀行匯款 <span class="caret"></span>
+            </a>
+            <ul class="dropdown-menu" aria-labelledby="dropdownMenu1">
+                <li><a href="bankTransfer_store.html">店家匯款</a></li>
+                <li><a href="bankTransfer_bee.html">小蜜蜂匯款</a></li>
+            </ul>
+        </li>
+
+        <li role="presentation"><a href="storeManagement.html">店鋪管理</a></li>
+        <li role="presentation" class="dropdown"><a href="beeManagement.html">小蜜蜂管理</a></li>
+        <li role="presentation" class="dropdown"><a href="activeUserManagement.html">活動紀錄查詢</a></li>
+        <li role="presentation" class="dropdown">
+            <a class="dropdown-toggle" data-toggle="dropdown" href="#" role="button" aria-haspopup="true" aria-expanded="false">
+                其他 <span class="caret"></span>
+            </a>
+
+            <ul class="dropdown-menu" aria-labelledby="dropdownMenu1">
+                <li><a href="coupon.html" target=_blank>折價卷產生器</a></li>
+                <li><a href="holdOrderTool.html" target=_blank>卡單小幫手</a></li>
+                <li><a href="" onclick="parseLogOut()">登出</a></li>
+            </ul>
+        </li>
+        <li role="presentation" class="dropdown">
+            <a class="dropdown-toggle" data-toggle="dropdown" href="#" role="button" aria-haspopup="true" aria-expanded="false">
+                即時資訊應用<span class="caret"></span>
+            </a>
+            <ul class="dropdown-menu" aria-labelledby="dropdownMenu1">
+                <li><a href="weatherInfo.html">氣象資料</a></li>
+                <li><a href="trafficInfo.html">交通路況</a></li>
+                <li><a href="https://www.parse.com/apps/hungry-bee-dev/push_notifications/new" target=_new>發push</a>
+            </ul>
+        </li>
+    </ul>
+
+    <br>
+
+    <div class="panel panel-default">
+        <div class="panel-heading">氣象資料</div>
+
+        <div class="panel-body">
+            <div class="navbar-form navbar-left">
+
+                <div class="form-group">
+					<button type="submit" class="btn btn-default" id="weatherSearchBtn1">查詢</button>
+                </div>
+
+                
+            </div>
+
+        </div>
+
+        <table class="table table-striped ">
+            <thead>
+                <tr>
+                    <th>#</th>
+                    <th>縣市</th>
+                    <th>觀測站</th>
+                    <th>觀測資料時間</th>
+                    <th>溫度</th>
+                    <th>相對濕度</th>
+                </tr>
+            </thead>
+            <tbody id="weatherTableBody"></tbody>
+        </table>
+
+    </div>
+
+    <script>
+
+        $('#weatherSearchBtn1').click(function () {
+        	//讀取中央氣象局資料
+		    $.get("http://opendata.cwb.gov.tw/govdownload?dataid=O-A0001-001&authorizationkey=rdec-key-123-45678-011121314",
+		    	function(data, status){
+		        console.log(data);
+		        
+		        var idx = 1;
+		        $(data).find("location").each(function(i){
+		        	//var total = $(data).find("location").length;//location總筆數
+		        	
+		        	//取城市
+		        	var city = "";
+		        	var cityNotInRange = false; //目前只取新竹縣市
+		        	$(this).find("parameter").each(function(j){
+		        		var paramName = $(this).children("parameterName").text();
+		        		if (paramName == "CITY") {
+		        			city = $(this).children("parameterValue").text();
+		        			if(city != "新竹市" && city != "新竹縣") {
+		        				cityNotInRange = true;
+		        				return; //continue;	
+		        			}
+		        		}
+		        	});
+		        	if(cityNotInRange) {
+		        		return;
+		        	}
+		        	
+		        	var locationName = $(this).children("locationName").text(); 
+		        	var stationId = $(this).children("stationId").text(); 
+		        	var obsTime = $(this).children("time").children("obsTime").text(); 
+		        	
+		        	
+		        	//取溫度及相對濕度
+		        	var temperature = "";
+		        	var humidity = "";
+		        	$(this).find("weatherElement").each(function(j){
+		        		var elementName = $(this).children("elementName").text();
+		        		if (elementName == "TEMP") {
+		        			temperature = $(this).children("elementValue").children("value").text();
+		        		}
+		        		if (elementName == "HUMD") {
+		        			humidity = $(this).children("elementValue").children("value").text();
+		        		}
+		        	});
+		        	
+		        	if(eval(humidity) > 50){
+		        		humidity = "<font color=red>" + humidity + "<font>";
+		        	}
+		        	
+		        	$('#weatherTableBody').append(
+	                      $('<tr>').append(
+	                          $('<td>').html(idx),
+	                          $('<td>').html(city),
+	                          $('<td>').html(locationName),
+	                          $('<td>').html(obsTime),
+	                          $('<td>').html(temperature),
+	                          $('<td>').html(humidity)
+	                        )
+	                   );
+	                idx++;
+		        	
+		        	
+		        });
+		    });
+        });
+      
+
+    </script>
+</body>
+</html>

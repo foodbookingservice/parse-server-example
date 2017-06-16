@@ -1,0 +1,272 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <script src="scripts/parse-1.6.14.min.js"></script>
+    <script src="hungrybee.js"></script>
+    <script src="scripts/hbParseInit.js"></script>
+    <script src="scripts/hbUtility.js"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.4.0/css/font-awesome.min.css" rel="stylesheet" type="text/css">
+
+    <!--<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.0/jquery.min.js"></script>-->
+
+    <!-- Latest compiled and minified CSS -->
+    <!--<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css" integrity="sha384-1q8mTJOASx8j1Au+a5WDVnPi2lkFfwwEAa8hDDdjZlpLegxhjVME1fgjWPGmkzs7" crossorigin="anonymous">-->
+    <!-- Optional theme -->
+    <!--<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap-theme.min.css" integrity="sha384-fLW2N01lMqjakBkx3l/M9EahuwpSfeNvV63J5ezn3uZzapT0u7EYsXMjQV+0En5r" crossorigin="anonymous">-->
+    <!-- Latest compiled and minified JavaScript -->
+    <!--<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/js/bootstrap.min.js" integrity="sha384-0mSbJDEHialfmuBBQP6A4Qrprq5OVfW37PRR3j5ELqxss1yVqOtnepnHVP9aJ7xS" crossorigin="anonymous"></script>-->
+
+    <script src="scripts/jquery-2.2.0.min.js"></script>
+    <script src="scripts/bootstrap.min.js"></script>
+    <link href="css/bootstrap.min.css" rel="stylesheet">
+    <link href="css/bootstrap-theme.min.css" rel="stylesheet">
+
+    <title>查詢消費者訂購紀錄</title>
+</head>
+<body>
+	
+	<ul class="nav nav-pills">
+        <li role="presentation" class="dropdown active">
+            <a class="dropdown-toggle" data-toggle="dropdown" href="#" role="button" aria-haspopup="true" aria-expanded="false">
+                訂單查詢 <span class="caret"></span>
+            </a>
+            <ul class="dropdown-menu" aria-labelledby="dropdownMenu1">
+                <li><a href="index.html?mode=id">訂單編號</a></li>
+                <li><a href="index.html?mode=date">訂單日期</a></li>
+                <li><a href="phoneSearch.html">依訂購人查詢</a></li>
+            </ul>
+            <!--<a href="index.html">訂單查詢</a>-->
+        </li>
+
+        <li role="presentation" class="dropdown">
+            <a class="dropdown-toggle" data-toggle="dropdown" href="#" role="button" aria-haspopup="true" aria-expanded="false">
+                帳單查詢 <span class="caret"></span>
+            </a>
+            <ul class="dropdown-menu" aria-labelledby="dropdownMenu1">
+                <li><a href="storeBill.html">店家帳單</a></li>
+                <li><a href="beeShippingFee.html">小蜜蜂帳單</a></li>
+            </ul>
+
+        </li>
+
+        <li role="presentation" class="dropdown">
+            <a class="dropdown-toggle" data-toggle="dropdown" href="#" role="button" aria-haspopup="true" aria-expanded="false">
+                銀行匯款 <span class="caret"></span>
+            </a>
+            <ul class="dropdown-menu" aria-labelledby="dropdownMenu1">
+                <li><a href="bankTransfer_store.html">店家匯款</a></li>
+                <li><a href="bankTransfer_bee.html">小蜜蜂匯款</a></li>
+            </ul>
+        </li>
+
+        <li role="presentation"><a href="storeManagement.html">店鋪管理</a></li>
+        <li role="presentation" class="dropdown"><a href="beeManagement.html">小蜜蜂管理</a></li>
+        <li role="presentation" class="dropdown"><a href="activeUserManagement.html">活動紀錄查詢</a></li>
+        <li role="presentation" class="dropdown">
+            <a class="dropdown-toggle" data-toggle="dropdown" href="#" role="button" aria-haspopup="true" aria-expanded="false">
+                其他 <span class="caret"></span>
+            </a>
+
+            <ul class="dropdown-menu" aria-labelledby="dropdownMenu1">
+                <li><a href="coupon.html" target=_blank>折價卷產生器</a></li>
+                <li><a href="holdOrderTool.html" target=_blank>卡單小幫手</a></li>
+                <li><a href="" onclick="parseLogOut()">登出</a></li>
+            </ul>
+        </li>
+    </ul>
+    
+       
+        <div class="panel-body">
+            <div class="navbar-form navbar-left">
+
+                <div class="form-group">
+                    <span class="label label-primary">1</span><br>
+                    <label for="dateFrom">時間: </label>
+                    <input id="dateFrom" type="date" class="form-control" min="2015-01-02">
+                    <label for="sel1">~</label>
+                    <input id="dateTo" type="date" class="form-control" min="2015-01-02">
+                    <!--button type="submit" class="btn btn-default" id="orderSearchBtn1">查詢</button-->
+
+                </div>
+
+                <p>  </p>
+
+               <div class="form-group">
+                    <label>電話:</label>
+                    <input type="text" class="form-control" placeholder="請輸入電話" id="orderNumberInput">
+                    <button type="submit" class="btn btn-default" id="orderSearchBtn1">查詢</button>
+                </div>
+
+
+               
+            </div>
+
+        </div>
+
+        <table class="table table-striped ">
+            <thead>
+                <tr>
+                    <th >#</th>
+                    <th>訂單編號</th>
+                    <th>日期</th>
+                    <th>訂餐人姓名</th>
+                    <th>訂餐人電話</th>
+                    <th>訂單金額</th>
+                    <th>獲得點數</th>
+                </tr>
+            </thead>
+            <tbody id="orderTableBody"></tbody>
+        </table>
+
+       
+
+    </div>
+
+    <script>
+        $(function () {
+           
+            var isBeeTakeOff = function (cart) {
+
+                var status = cart.get("status");
+                var beeTakeOff = cart.get("beeTakeoff");
+                
+                if (beeTakeOff || isEquality(status, "complete")) {
+                    return true;
+                }
+
+                return false;
+            };
+
+
+            
+            var searchOrder = function (dateFrom, dateTo) {
+            	var phoneNo = $("#orderNumberInput").val();
+            	
+                $("#orderTableBody tr").remove();
+                var HBShoppingCart = Parse.Object.extend("HBShoppingCart");
+                var query = new Parse.Query(HBShoppingCart);
+                //query.include('sendTo');
+                //query.include('owner');
+                //query.include('bee');
+                query.exists('submittedDate');
+                query.greaterThan("submittedDate", dateFrom);
+                query.lessThan("submittedDate", dateTo);
+                //query.matches("contactPhone", /224$/);
+                query.ascending("submittedDate");
+                query.limit(1000);
+                query.find({
+                    success: function (carts) {
+                    	$("#orderTableBody tr").remove();
+                        console.log("carts size = " + carts.length);
+                        var idx = 1;
+                        carts.forEach(function (cart, index, array) {
+                        	var userPhone = cart.get('contactPhone');
+                        	//console.log("userPhone=" + userPhone);
+                        	if(typeof userPhone !== 'undefined' && cart.get("paymentMethod") != "cashForStore") {
+                        		if(userPhone.indexOf(phoneNo) != -1) {
+									//資料撈出的結果 共八項
+		                              $('#orderTableBody').append(
+		                              $('<tr>').append(
+		                                 $('<td>').html(idx), //#
+		                                 $('<td>').html("<a href='orderInfo.html?objectId=" + cart.id + "' target=_blank>" + cart.id + "</a>"),
+		                                 $('<td>').html(format(cart.get('submittedDate'), 'MM-dd')),
+		                                 $('<td>').html(cart.get('contactPerson')),
+		                                 $('<td>').html(cart.get('contactPhone')),
+		                                 $('<td>').html("$" + cart.get('totalPrice')),
+		                                 $('<td>').html(Math.floor(cart.get('totalPrice')/1000))
+		                             )
+		                          );
+		                          idx++;
+	                      		}
+                        	}
+                        });
+
+                    }, error: function (e) {
+                        alert(e);
+                    }
+
+                });
+
+            };
+
+
+
+
+             var searchOrderById = function (id) {
+                $("#orderTableBody tr").remove();
+                var HBShoppingCart = Parse.Object.extend("HBShoppingCart");
+                var query = new Parse.Query(HBShoppingCart);
+                query.include('contactPhone');
+                query.limit(1000);
+                 query.find({
+                    success: function (carts) {
+                        $("#orderTableBody tr").remove();
+                        console.log("carts size = " + carts.length);
+                        carts.forEach(function (cart, index, array) {
+                              $('#orderTableBody').append(
+                              $('<tr>').append(
+                                 $('<td>').html(index + 1), //#
+                                 $('<td>').html(cart.get('contactPhone')),
+                                 $('<td id=' + cart.id + '>').html(""),
+                                 $('<td>').html(cart.get('totalPrice')),
+                                 $('<td>').html(format(cart.get('ETD'), 'yyyy-MM-dd') + " " + format(cart.get('ETD'), 'hh:mm') + "/" + format(cart.get('ETA'), 'hh:mm'))
+                             )
+                          );
+
+                            var HBStoreInCart = Parse.Object.extend("HBStoreInCart");
+
+                            var storeInCartQuery = new Parse.Query(HBStoreInCart);
+                            storeInCartQuery.equalTo("cart", cart);
+                            storeInCartQuery.include("store");
+                            storeInCartQuery.find({
+                                success: function (storeInCarts) {
+                                    var len = storeInCarts.length;
+                                    var names = "";
+                                    storeInCarts.forEach(function(storeInCart,sIndex,array){
+                                        var storeName = storeInCart.get('store').get('storeName');
+                                        names += storeName;
+                                        if (sIndex != len - 1) {
+                                            names+=",";
+                                        }
+                                        console.log("storeName: " + names);
+                                        $("#" + cart.id).html(names);
+
+                                    });
+     
+                                }
+
+                            });
+
+
+                        });
+
+                    }, error: function (e) {
+                        alert(e);
+                    }
+
+                });
+
+            };
+            //init();
+
+             $('#orderSearchBtn1').click(function () {
+                var dateFrom = new Date($("#dateFrom").val());
+                var dateTo = new Date($("#dateTo").val());
+                dateTo.setDate(dateTo.getDate() + 1);
+
+                searchOrder(dateFrom, dateTo);
+            });
+
+            $('#orderSearchBtn2').click(function () {
+            searchOrderById($('#orderNumberInput').val());
+            });
+
+            
+        });
+
+    </script>
+</body>
+</html>
