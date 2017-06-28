@@ -45,9 +45,9 @@ app.get('/test', function(req, res) {
   res.sendFile(path.join(__dirname, '/public/test.html'));
 });
 
-app.get('/booking', function(req, res) {
-  res.sendFile(path.join(__dirname, '/public/booking/index.html'));
-});
+
+var booking = express();
+booking.use('/booking', express.static(path.join(__dirname, '/public/booking')));
 
 var port = process.env.PORT || 1337;
 var httpServer = require('http').createServer(app);
