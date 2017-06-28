@@ -68,10 +68,10 @@ Parse.Cloud.define("getMealsOfFoodStore", function(request, response) {
 	var query = new Parse.Query("HBMealSet");
 	query.equalTo("belongTo", store); 
 	query.equalTo("online", true);
-	query.include("foodImage"); 
-	query.include("thumbnail");
-	query.include("belongTo");
-	query.ascending("displayOrder");
+	//query.include("foodImage"); 
+	//query.include("thumbnail");
+	//query.include("belongTo");
+	//query.ascending("displayOrder");
   	query.find({
 		success: function(results) {
 			response.success(results);
