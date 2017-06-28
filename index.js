@@ -48,6 +48,8 @@ app.get('/test', function(req, res) {
 
 var booking = express();
 booking.use('/booking', express.static(path.join(__dirname, '/public/booking')));
+app.use('booking', booking);
+
 
 var port = process.env.PORT || 1337;
 var httpServer = require('http').createServer(app);
