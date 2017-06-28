@@ -9,5 +9,5 @@ var jskey = "nbkR1HRcOkFEa4J73rPsWvaZsqa6O6BHI0GSGClz"
 */
 
 var appid = "9tWLecLJLoApOL6sMDaP";
-			Parse.initialize(appid);
-			Parse.serverURL = 'http://foodbooking.herokuapp.com/parse'
+Parse.initialize(appid);
+Parse.serverURL = "https://kingbreakfast.herokuapp.com/parse";
