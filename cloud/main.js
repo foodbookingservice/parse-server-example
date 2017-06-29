@@ -1429,7 +1429,7 @@ Parse.Cloud.define("getGroupBuying", function(request, response) {
 Parse.Cloud.define("listMyAddressBook", function(request, response) {
 	
 	var query = new Parse.Query("HBUserAddressBook");
-	query.equalTo("user", request.user);
+	//query.equalTo("user", request.user);
   	query.find({
     	success: function(results) {
      		var addressBook = [];
