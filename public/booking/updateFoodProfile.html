@@ -88,25 +88,30 @@
 				// 將餐點圖檔資料存放至 HBLob
 				var hblobArray = [];
 				for(var i=0; i<parseObjectArray.length; i++) {
-					var lob = new HBLob();
-					var thumbnail = parseObjectArray[i].thumbnailImage;
-					lob.set("category", thumbnail.category);
-					lob.set("data", thumbnail.imageObj);
-					lob.set("fileName", thumbnail.imageName);
-					lob.set("fileWidth", thumbnail.imgWidth);
-					lob.set("fileHeight", thumbnail.imgHeight);
-					lob.setACL(acl);
-					hblobArray.push(lob);
 					
-					lob = new HBLob();
+					var thumbnail = parseObjectArray[i].thumbnailImage;
+					if (typeof thumbnail != "undefined") {
+						var lob = new HBLob();
+						lob.set("category", thumbnail.category);
+						lob.set("data", thumbnail.imageObj);
+						lob.set("fileName", thumbnail.imageName);
+						lob.set("fileWidth", thumbnail.imgWidth);
+						lob.set("fileHeight", thumbnail.imgHeight);
+						lob.setACL(acl);
+						hblobArray.push(lob);
+					}
+					
 					var largeImage = parseObjectArray[i].largeImage;
-					lob.set("category", largeImage.category);
-					lob.set("data", largeImage.imageObj);
-					lob.set("fileName", largeImage.imageName);
-					lob.set("fileWidth", largeImage.imgWidth);
-					lob.set("fileHeight", largeImage.imgHeight);
-					lob.setACL(acl);
-					hblobArray.push(lob);
+					if (typeof largeImage != "undefined") {
+						lob = new HBLob();						
+						lob.set("category", largeImage.category);
+						lob.set("data", largeImage.imageObj);
+						lob.set("fileName", largeImage.imageName);
+						lob.set("fileWidth", largeImage.imgWidth);
+						lob.set("fileHeight", largeImage.imgHeight);
+						lob.setACL(acl);
+						hblobArray.push(lob);
+					}
 				}
 				
 				console.log("save lob:" + new Date());
