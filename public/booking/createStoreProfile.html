@@ -262,15 +262,19 @@
 			var actionType = $('input:radio:checked[name="className"]').val();
 			if(actionType == "HBMealSet") {
 				//load store info
-				
-				Parse.Cloud.run("getFoodStoreForCMS", 
+				loadStoreList();
+			}//~if
+		});
+		
+		function loadStoreList() {
+			Parse.Cloud.run("getFoodStoreForCMS", 
 						{	
 						}, 
 						{
 						success: function(results) {
 							var options = [];
-							var option = "<option value='---'> --- 請選店家 -- </option>";
-							options.push(option);
+							//var option = "<option value='---'> --- 請選店家 -- </option>";
+							//options.push(option);
 					 	 	for(var i=0 ; i<results.length ; i++) {
 						 		option = "<option value='" + results[i].id + "'>" + results[i].get("storeName") + "</option>";
 						 		options.push(option);
@@ -281,11 +285,11 @@
 					 		console.log("submitSurveyWebForm error:" + error.message);
 						}
 					});
-				
-				
-			}//~if
-		});
-
+		}
+		
+	$(function(){
+		loadStoreList();	
+	});
 	</script>
 		
 		
@@ -298,13 +302,16 @@
 <script>
 	w3IncludeHTML();
 	</script>
-		
-<h1>新增供應者/餐點</h1>
+<!--		
+<h1>新增供應者/餐點</h1-->
+
+<h1>新增餐點</h1>
+
 
 <form name="uploadForm">
 	<table border=0>
 		<tr>
-			<td valign="top" width="45%">
+			<td valign="top" width="45%" style="display:none">
 				<table border=0>
 					<tr>
 						<td colspan="2">
@@ -411,7 +418,7 @@
 			<td valign="top">
 				<table border=0 width="100%">
 					<tr>
-						<td colspan="2"><input type="radio" id="className"  name="className" value="HBMealSet"> 新增餐點</td>
+						<td colspan="2"><input type="radio" id="className"  name="className" value="HBMealSet" checked> 新增餐點</td>
 					</tr>
 					<tr>
 						<td>店家:</td>
@@ -425,15 +432,15 @@
 						<td>餐名:</td>
 						<td><input type="text" name="mealName" id="mealName" ></td>
 					</tr>
-					<tr>
+					<tr style="display:none">
 						<td>餐點順序:</td>
-						<td><input type="text" name="displayOrder" id="displayOrder"></td>
+						<td><input type="text" name="displayOrder" id="displayOrder" value="1"></td>
 					</tr>
 					<tr>
 						<td>單價:</td>
 						<td><input type="text" name="price" id="price"></td>
 					</tr>
-					<tr>
+					<tr style="display:none">
 						<td>1小時約幾份:</td>
 						<td><input type="text" name="maxQty" id="maxQty"></td>
 					</tr>
@@ -441,32 +448,39 @@
 						<td>餐點簡介:</td>
 						<td><input type="text" name="brief" id="brief" value="本店招牌餐"></td>
 					</tr>
-					<tr>
+					<tr style="display:none">
 						<td valign="top">單件所佔容量:</td>
 						<td>
 							例:一個保溫袋可裝20份，則輸入 0.05<BR>
-							<input type="text" name="bags" id="bags">
+							<input type="text" name="bags" id="bags" value="1">
 						</td>
+					</tr>
+					
+					<tr>
+						<td>屬性設定:</td>
+						<td>
+							<input type="checkbox" id="needFoodSize"> 有大小份選項<br>
+							
+							<!-- 可用選項，暫時先保留 -->
+							<div style="display:none">
+								<input type="checkbox" id="needCupSize">有大小杯選項<br>
+								<input type="checkbox" id="needAdditions">小杯加料$5<BR>
+								<input type="checkbox" id="needLargeAdditions">大杯加料$10<br>
+								
+								
+								<input type="checkbox" id="needColdHot">有冷熱選項<br>
+								<input type="checkbox" id="needIce">有冰塊選項<br>
+								<input type="checkbox" id="needSugar">有甜度選項<br>
+								
+								<input type="checkbox" id="needSpicy">有辣椒選項<br>
+								<input type="checkbox" id="needPepper">有胡椒選項<br>
+							</div>
 					</tr>
 					<tr>
 						<td>大份比小份多多少錢:</td>
 						<td><input type="text" name="extraPriceForSize" id="extraPriceForSize" value="0"></td>
 					</tr>
-					<tr>
-						<td>屬性設定:</td>
-						<td>
-							<input type="checkbox" id="needCupSize">有大小杯選項<br>
-							<input type="checkbox" id="needAdditions">小杯加料$5<BR>
-							<input type="checkbox" id="needLargeAdditions">大杯加料$10<br>
-							
-							<input type="checkbox" id="needFoodSize">有大小份選項<br>
-							<input type="checkbox" id="needColdHot">有冷熱選項<br>
-							<input type="checkbox" id="needIce">有冰塊選項<br>
-							<input type="checkbox" id="needSugar">有甜度選項<br>
-							
-							<input type="checkbox" id="needSpicy">有辣椒選項<br>
-							<input type="checkbox" id="needPepper">有胡椒選項<br>
-					</tr>
+					
 					<tr>
 						<td>155*155 圖檔:</td>
 						<td><input type="file" id="food_155x155"></td>
