@@ -3636,7 +3636,7 @@ Parse.Cloud.define("getTimeSlotByDate", function(request, response) {
 	console.log("greater:" + ((currentTime.getHours()+8) * 60 + currentTime.getMinutes() + 60));
 	var querySlot = new Parse.Query("HBTimeSlot");
 	querySlot.equalTo("enable", true);
-	if (request.params.isToday == "Yes") {
+	if (request.params.isToday == "Yes") { // 如果是今天，只取大於目前時間的時段
 		querySlot.greaterThan("sinceMidnight", (currentTime.getHours()+8) * 60 + currentTime.getMinutes() + 60);
 	}
 	querySlot.ascending("sinceMidnight");
