@@ -2479,13 +2479,13 @@ function availableBizDate(bizDate) {
 //
 Parse.Cloud.define("availableBizDateOption", function(request, response) {
 	var bizDate = [];
-	bizDate.push(true);	//"Sun"
+	bizDate.push(false);	//"Sun"
 	bizDate.push(true);     //"Mon"
 	bizDate.push(true);     //"Tue"
 	bizDate.push(true);     //"Wed"
 	bizDate.push(true);     //"Thu"
 	bizDate.push(true);     //"Fri"
-	bizDate.push(true);    //"Sat"
+	bizDate.push(false);    //"Sat"
 	
 	var weekstring = ["(日)","(一)","(二)","(三)","(四)","(五)","(六)"];
 	var e_weekstring = ["Sun","Mon","Tue","Wed","Thu","Fri","Sat"];
@@ -2505,7 +2505,7 @@ Parse.Cloud.define("availableBizDateOption", function(request, response) {
 			availableDate.push(dateObj);
 			//availableDate.push((futureTime.getMonth()+1) + "/" + futureTime.getDate() + weekstring[futureTime.getDay()]);
 		}
-		if (availableDate.length == 4) break; //先取4天
+		if (availableDate.length == 4) break; //先取3天
 		counter++;
 	}
 	response.success(availableDate);
