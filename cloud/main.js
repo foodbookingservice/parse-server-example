@@ -3899,26 +3899,17 @@ Parse.Cloud.define("addTrafficReport", function(request, response) {
 ///
 Parse.Cloud.define("UpdateProfile", function(request, response) {
 	var userFound = request.user;
-	console.log("userFound:" + userFound);
-	
-	//var query = new Parse.Query(Parse.User);
-	//query.get(request.params.userId, {
-	  	//success: function(userFound) {
-			Parse.Cloud.useMasterKey();
-	
-	  		userFound.set("contact", request.params.contactName);
-	  		userFound.save(null,{
-				success: function(userSaved) {
-					response.success(true);
-				},
-				error: function(err) {
-					logger.send_error(logger.subject("UpdateProfile", "save user contact") , err);
-					response.error("save user error:" + err);
-				}	
-			});
-	 	//},
-	  	//error: function(object, err) {
-	  	//	response.error(" user not found:" + err);
-	  	//}
-	//});
+	console.log("userFound:" + JSON.stringify(userFound));
+			
+	userFound.set("contact", request.params.contactName);
+	Parse.Object.saveAll(userFound, {
+        success: function(userFound) {
+            response.success(true);  
+        },
+        error: function(error) { 
+            logger.send_error(logger.subject("UpdateProfile", "save user contact") , error);
+            response.error(error);		
+        },
+        useMasterKey: true
+	});
 });
