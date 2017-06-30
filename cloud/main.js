@@ -1117,7 +1117,7 @@ Parse.Cloud.define("submitShoppingCart", function(request, response) {
 			 		    	}
 			 		    }
 			 		    
-			 		    cartFound.save({})
+			 		    cartFound.save({useMasterKey:true})
 			 		    	.then(function(cartUpdated) {
 			 		    		var queryAddr = new Parse.Query("HBUserAddressBook");
 								queryAddr.equalTo("objectId", cartUpdated.get("sendTo").id);
@@ -3624,7 +3624,7 @@ Parse.Cloud.define("getETADateOptions", function(request, response) {
 			availableDate.push((futureTime.getMonth()+1) + "/" + futureTime.getDate() + "\n" + weekstring[futureTime.getDay()]);
 			availableDayOfWeek.push(dayOfWeek[futureTime.getDay()]);
 		}
-		if (availableDate.length == 4) break; //先取4天
+		if (availableDate.length == 3) break; //先取3天
 		counter++;
 	}
 	response.success(availableDate, availableDayOfWeek);

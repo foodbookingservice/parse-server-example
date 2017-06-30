@@ -23,11 +23,11 @@ exports.error_admin = function() {
 }
 
 exports.order_url = function() {
-	return "http://hungrybee.net/hungrybee/index.php";
+	return "https://kingbreakfast.herokuapp.com/public/booking/orderManagement.html";
 }
 
 exports.shorten_url = function() {
-	return "https://foodbooking.herokuapp.com/public"; //Heroku
+	return "https://kingbreakfast.herokuapp.com/public"; //Heroku
 }
 
 exports.order_info = function() {
