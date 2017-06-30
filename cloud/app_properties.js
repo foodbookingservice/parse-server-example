@@ -1,6 +1,6 @@
 
 exports.env = function() {
-	return "Booking";	
+	return "";	
 }
 exports.push_env = function() {
 	return "";	
