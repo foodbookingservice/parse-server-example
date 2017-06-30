@@ -3894,3 +3894,28 @@ Parse.Cloud.define("addTrafficReport", function(request, response) {
     	}
   	});
 });
+
+
+///
+Parse.Cloud.define("UpdateProfile", function(request, response) {
+	
+	var query = new Parse.Query(Parse.User);
+	query.get(request.params.userId, {
+	  	success: function(userFound) {
+	  		Parse.Cloud.useMasterKey();
+	  		userFound.set("contact", request.params.contactName);
+	  		userFound.save(null,{
+				success: function(userSaved) {
+					response.success(true);
+				},
+				error: function(err) {
+					logger.send_error(logger.subject("UpdateProfile", "save user contact") , err);
+					response.error("save user error:" + err);
+				}	
+			});
+	 	},
+	  	error: function(object, err) {
+	  		response.error(" user not found:" + err);
+	  	}
+	});
+});
