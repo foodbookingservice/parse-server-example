@@ -105,25 +105,22 @@ Parse.Cloud.afterSave("HBShoppingCart", function(request, response) {
 	console.log("qrcode:" + (request.object.get("qrcode") !=null));
 	console.log("bee is undefined:" + ( (typeof request.object.get("bee")) === 'undefined'));
 	
-	if (request.object.get("status") == "onbid" && 
-		request.object.get("deliveryOrder") && 
-		//request.object.get("qrcode") != null && 
-		(typeof request.object.get("bee")) === 'undefined' && 
-		(typeof request.object.get("bidCount")) === 'undefined') { //競標中 and 外送單 and 已產生  QRCode 但尚未有人搶標
+	if (request.object.get("status") == "preparing" && 
+		request.object.get("bidCount") == '1') {
 									  
-		console.log("bidCount:" + request.object.get("bidCount"));
-		
-	    var currentTime1 = new Date();
-	    var currentTime2 = new Date();
+		var currentTime2 = new Date();
 	    currentTime2.setHours ( currentTime1.getHours() + 8 );
 		var printMsg = currentTime2.getFullYear() + "/" + (currentTime2.getMonth() + 1) + "/" + currentTime2.getDate() + " " + 
 	    				currentTime2.getHours() + ":" + currentTime2.getMinutes() + ":" + currentTime2.getSeconds();
 		var etd = request.object.get("ETD");
 		var eta = request.object.get("ETA");
 		
+		var minutesString = eta.getMinutes();
+		if (minutesString == "0") minutesString = "00";
+		
 		var body = "<Html><body>訂單產生時間: " + printMsg + "<BR>";
 		body += "訂單金額: $" + request.object.get("totalPrice") + "<BR><BR>";
-		body += "送餐時段: " + (eta.getMonth() + 1) + "/" + eta.getDate() + " " + (eta.getHours()+8) + ":" + eta.getMinutes() + "<BR>";
+		body += "送餐時段: " + (eta.getMonth() + 1) + "/" + eta.getDate() + " " + (eta.getHours()+8) + ":" + minutesString + "<BR>";
 		body += "<h1><a href='" + prop.order_url() + "'>查詢訂單</a></h1>";
 		body += "</body></html>";
 		

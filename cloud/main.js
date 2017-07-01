@@ -1005,242 +1005,52 @@ Parse.Cloud.define("getCoupons", function(request, response) {
 
 
 //送出購物車
-//送出後，再產生QRCode. see submitQRCode
 Parse.Cloud.define("submitShoppingCart", function(request, response) {
-	if(request.params.allPayNo == "" && request.params.paymentMethod == "") {
-		response.error(err);
-	} else {
-		var query = new Parse.Query("HBShoppingCart");
-		query.get(request.params.cartId, {
-		  	success: function(cartFound) {
-		  		var query = new Parse.Query("HBShoppingItem");
-				query.equalTo("shoppingCart", cartFound);
-				query.include("store");
-				query.find({
-			    	success: function(itemsFound) {
-			    		var orderNoPrefix = [];
-			    		var subTotalPrice = 0;
-			    		var totalQty = 0;
-			    		
-			    		//產生訂單編號及小計
-			    		var storeObjArray = [];
-			    		var storeIdArray = [];
-			    		var storeBags = [];
-			    		for(var i=0 ; i<itemsFound.length ; i++) {
-			     			var itemObj = itemsFound[i];	
-			     			var storeObj = itemObj.get("store");
-			     			var storeFoundAt = storeIdArray.indexOf(storeObj.id);
-			     			if (storeFoundAt == -1) {
-			     				storeObjArray.push(storeObj);
-			     				storeIdArray.push(storeObj.id);
-			     				storeBags.push(itemObj.get("bags"));
-			     			}  else {
-				 				var currentBags = storeBags[storeFoundAt];
-				 				currentBags = currentBags + itemObj.get("bags");
-				 				storeBags[storeFoundAt] = currentBags;
-				 			}
-			     			
-			     			var storeCode = storeObj.get("storeCode");
-			     			if (orderNoPrefix.indexOf(storeCode) == -1) { // not found
-			     				orderNoPrefix.push(storeCode);
-			     			}		     			
-			     			subTotalPrice += eval(itemObj.get("subTotal"));
-			     			totalQty += eval(itemObj.get("qty"));
-			     		}
-			     		
-			     		if (request.params.sendToId != null) {
-				     		var HBUserAddressBook = Parse.Object.extend("HBUserAddressBook");
-						    var address = new HBUserAddressBook();
-							address.id = request.params.sendToId;
-				     	}
-			     	
-			     		var tempETA = request.params.ETA; // formate: 8/8(四) 13:45
-			     		if (tempETA != null && tempETA != "") {
-			     			var tempDay = tempETA.substring(0, tempETA.indexOf("("));
-							var tempSlot = tempETA.substring(tempETA.indexOf(" ") + 1);
-							var eta = new Date(new Date().getFullYear() + "/" + tempDay + " " + tempSlot);
-							eta.setMinutes(eta.getMinutes() - 480); // 轉換成 UTC 時間
-									
-							var etd = new Date(eta);
-							//送達時間前30分鐘設為取餐時間，每多一個店家多5分鐘
-							etd.setMinutes(eta.getMinutes() - 30 - ((orderNoPrefix.length-1) * 5));
-			     		}
-			     		
-			     		
-			     		Parse.Cloud.useMasterKey();
-			     		var orderNo = orderNoPrefix.join("") + "-" + request.params.cartId;
-			     		cartFound.set("orderNo", orderNo);
-			     		cartFound.set("status", request.params.status);
-			     		cartFound.set("shippingFee", eval(request.params.shippingFee));
-			 		    cartFound.set("discount", eval(request.params.discount));
-			 		    cartFound.set("totalPrice", subTotalPrice + eval(request.params.shippingFee)+eval(request.params.discount));
-			 		    cartFound.set("couponNo", request.params.couponNo);
-			 		    cartFound.set("needTaxId", request.params.needTaxId);
-			 		    cartFound.set("taxId", request.params.taxId);
-			 		    cartFound.set("payToBee", 130+((orderNoPrefix.length-1) * 15)); //130 起跳
-			 		    cartFound.set("addressNote", request.params.addressNote); 
-			 		    
-			 		    if (request.params.userEmail != "") {
-			 		    	cartFound.set("userEmail", request.params.userEmail);
-			 			}
-			 			if (request.params.phone != "") {
-			 		    	cartFound.set("contactPhone", request.params.phone);
-			 			}
-			 			if (request.params.contact != "") {
-			 		    	cartFound.set("contactPerson", request.params.contact);
-			 			}
-			 			
-			 		    if (request.params.deliveryOrder == true) {
-				 		    cartFound.set("ETD", etd);
-				 		    cartFound.set("ETA", eta);
-				 		}
-			 		    cartFound.set("allPayNo", request.params.allPayNo);
-			 		    if (request.params.sendToId != null) {
-				 		    cartFound.set("sendTo", address);
-				 		}
-			 		    cartFound.set("deliveryOrder", request.params.deliveryOrder);
-			 		    cartFound.set("submittedDate", new Date());
-			 		    cartFound.set("lineModeEnable", false);
-			 		    if (request.params.installationId) {
-			 		    	cartFound.set("installation", request.params.installationId);	
-			 		    }
-			 		    if (request.params.sinceMidnight) {
-			 		    	cartFound.set("etaSinceMidnight", request.params.sinceMidnight);	
-			 		    }
-			 		    
-			 		    if (request.params.paymentMethod) {
-			 		    	//司機版會受影響，暫時不更新此柵位
-			 		    	//cartFound.set("paymentMethod", request.params.paymentMethod);
-			 		    	
-			 		    	if(request.params.paymentMethod == "userPayCash") { //貨到付款
-			 		    		cartFound.set("allPayNo", "userPayCash");
-			 		    	}
-			 		    }
-			 		    
-			 		    cartFound.save({useMasterKey:true})
-			 		    	.then(function(cartUpdated) {
-			 		    		var queryAddr = new Parse.Query("HBUserAddressBook");
-								queryAddr.equalTo("objectId", cartUpdated.get("sendTo").id);
-			 		    		return Parse.Promise.when( queryAddr.find(), cartUpdated);
-			 		    	})
-			 		    	.then(function(addrFound, cartUpdated) {
-			 		    		var HBCustomerInCart = Parse.Object.extend("HBCustomerInCart");
-					        	var customerInCart = new HBCustomerInCart();
-					        	customerInCart.set("address", addrFound[0].get("address"));
-					        	customerInCart.set("location", addrFound[0].get("geoLocation"));
-					        	customerInCart.set("contact", request.params.contact);
-			 					customerInCart.set("phone", request.params.phone);
-					        	customerInCart.set("addressNote", request.params.addressNote); 
-					        	customerInCart.set("cart", cartUpdated); 
-					        	customerInCart.set("delivered", false); 
-					        	customerInCart.set("ETA", cartUpdated.get("ETA")); 
-					        	return Parse.Promise.when( customerInCart.save(), cartUpdated);
-			 		    	})
-			 		    	.then(function(customerInCart, cartFound) {
-			 		    		// create new 
-					        	var HBStoreInCart = Parse.Object.extend("HBStoreInCart");
-								var itemArray = [];
-								for (var i= 0 ; i<storeObjArray.length ; i++) {
-							    	var item = new HBStoreInCart();
-							        item.set("cart", cartFound);
-							        item.set("store", storeObjArray[i]);
-							        item.set("foodTaken", false);
-							        item.set("replied", false);
-							        item.set("bags", Math.ceil(storeBags[i])); //無條件進位
-			        
-							        //todo. 之後再依實際載具運算, Avery . 160621
-							        var bagSize = "S";
-							        if (Math.ceil(storeBags[i]) > 5) {
-							        	bagSize = "L";
-							        }
-							        item.set("bagSize", bagSize);
-							        itemArray.push(item);
-							    }
-							
-							    Parse.Object.saveAll(itemArray, {
-							        success: function(dataCreated) {
-							            //update user info according to order's user info
-							        	var currentUser = request.user;
-							        	currentUser.set("phone", request.params.phone);
-							        	currentUser.set("contact", request.params.contact);
-							        	currentUser.set("userEmail", request.params.userEmail);
-							        	
-							        	if(request.params.rememberCreditCart == "YES") {
-							 		    	currentUser.set("rememberCardNo", true);
-							 		    	currentUser.set("cardNo", request.params.cardNo);
-							 		    	currentUser.set("cardValidMonth", request.params.cardValidMM);
-							 		    	currentUser.set("cardValidYear", request.params.cardValidYY);
-							 		    } else {
-							 		    	currentUser.set("rememberCardNo", false);
-							 		    }
-							 		    
-							 		    currentUser.save(null, {
-							        		success: function(userUpdated) {
-							        			var subject = userUpdated.get("contact") + " 送出新訂單: " + cartFound.id;
-							        			var sDate = cartFound.get("submittedDate");
-							        			
-							        			var body = "訂購人: " + userUpdated.get("contact") + ", " + userUpdated.get("phone") + "<BR>";
-							        			body += "email: " + userUpdated.get("userEmail") + "<BR><BR>";
-							        			body += "訂單編號: " + cartFound.id + "<BR>";
-							        			body += "訂單產生時間: " + (sDate.getMonth() + 1) + "/" + sDate.getDate() + " " + (sDate.getHours()+8) + ":" + sDate.getMinutes() + "<BR><BR>";
-							        			
-							        			body += "餐點預計送達時間: " + tempETA + "<BR>";
-							        			body += "送餐地址: " + request.params.address + "<BR>";
-							        			body += "送餐備註: " + request.params.addressNote + "<BR><BR>";
-							        			
-							        			body += "餐費: $" + subTotalPrice + "<BR>";
-							        			body += "運費: $" + cartFound.get("shippingFee") + "<BR>";
-							        			
-							        			if (cartFound.get("couponNo") != "") {
-							        				body += "折價金額: $" + cartFound.get("discount") + " (折價卷: " + cartFound.get("couponNo") + ")<BR>";
-							        			} else {
-							        				body += "折價金額: $0 (未使用折價卷)<BR>";
-							        			}
-							        			
-							        			body += "刷卡金額: <font color=blue>$" + cartFound.get("totalPrice") + "</font><BR>";
-							        			body += "歐付寶交易序號: " + cartFound.get("allPayNo") + "<BR><BR>";
-							        			body += prop.order_info() + "?objectId=" + cartFound.id;
-							        			
-							        			logger.send_notify(prop.admin_mail(), prop.mail_cc(), subject, body);
-							        			
-							        			//計算出較精準的到店取餐時間
-							        			Parse.Cloud.run("calculateETD", 
-							        							{cartId: cartFound.id}, 
-							        							{
-									                            	success: function (result) {
-									                            		response.success(cartFound.id);
-									                        		}, error: function (error) {
-									                        			logger.send_error(logger.subject("submitShoppingCart", "call calculateETD failed."), error);
-																		response.error(error);
-									                        		}
-									                            });
-							        			
-							        		},
-							        		error: function(error) { 
-							        			logger.send_error(logger.subject("submitShoppingCart", "currentUser update failed."), error);
-												response.error(error);
-							        		}
-							        	});
-							        },
-							        error: function(error) { 
-							            logger.send_error(logger.subject("updateShoppingCart", "save HBShoppingItem"), error);
-										response.error(error);		
-							        }
-								});
-			 		    	});
-					},
-			    	error: function(err) {
-						logger.send_error(logger.subject("submitShoppingCart", "find shopping item error."), err);
-			      	  	//response.error(err);
-			    	}
-			  	});
-		 	},
-		  	error: function(object, err) {
-				logger.send_error(logger.subject("submitShoppingCart", "query shopping cart error."), err);
-				response.error("submitShoppingCart failed." + err.code + "," + err.message);
-		  	}
-		});
-	}
+	var query = new Parse.Query("HBShoppingCart");
+	query.get(request.params.cartId, {
+	  	success: function(cartFound) {
+	  		
+	  		cartFound.set("status", request.params.status);
+	  		
+	  		if (request.params.sendToId != null) {
+	     		var HBUserAddressBook = Parse.Object.extend("HBUserAddressBook");
+			    var addressObj = new HBUserAddressBook();
+				addressObj.id = request.params.sendToId;
+				
+				cartFound.set("sendTo", addressObj);
+				cartFound.set("sendToAddress", request.params.address);
+	     	}
+     		
+     		cartFound.set("shippingFee", 0);
+ 		    cartFound.set("totalPrice", eval(request.params.totalPrice));
+ 		    if (request.params.contact != "") {
+ 		    	cartFound.set("contactPerson", request.params.contact);
+ 			}
+ 			
+ 			var tempETA = request.params.ETA; // formate: 8/8(四) 13:45
+     		if (tempETA != null && tempETA != "") {
+     			var tempDay = tempETA.substring(0, tempETA.indexOf("("));
+				var tempSlot = tempETA.substring(tempETA.indexOf(" ") + 1);
+				var eta = new Date(new Date().getFullYear() + "/" + tempDay + " " + tempSlot);
+				eta.setMinutes(eta.getMinutes() - 480); // 轉換成 UTC 時間
+			}
+ 		    cartFound.set("ETA", eta);
+ 		    cartFound.set("deliveryOrder", true);
+ 		    cartFound.set("submittedDate", new Date());
+ 		    if (request.params.installationId) {
+ 		    	cartFound.set("installation", request.params.installationId);	
+ 		    }
+ 		    cartFound.set("paymentMethod", request.params.paymentMethod);
+ 		    cartFound.save({useMasterKey:true})
+ 		    	.then(function(cartUpdated) {
+ 		    		response.success(true);
+ 		    	});
+	 	},
+	  	error: function(object, err) {
+			logger.send_error(logger.subject("submitShoppingCart", "query shopping cart error."), err);
+			response.error("submitShoppingCart failed." + err.code + "," + err.message);
+	  	}
+	});
 });
 
 // Line state

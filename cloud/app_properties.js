@@ -1,6 +1,6 @@
 
 exports.env = function() {
-	return "";	
+	return "國王早餐";	
 }
 exports.push_env = function() {
 	return "";	
@@ -31,7 +31,7 @@ exports.shorten_url = function() {
 }
 
 exports.order_info = function() {
-	return "http://foodbooking.herokuapp.com/booking/orderInfo.html";
+	return "https://kingbreakfast.herokuapp.com/public/booking/orderManagement.html";
 }
 
 exports.mock_mode = function() {
