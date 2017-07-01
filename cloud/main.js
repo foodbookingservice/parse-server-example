@@ -1009,7 +1009,7 @@ Parse.Cloud.define("submitShoppingCart", function(request, response) {
 	var query = new Parse.Query("HBShoppingCart");
 	query.get(request.params.cartId, {
 	  	success: function(cartFound) {
-	  		
+	  		Parse.Cloud.useMasterKey();
 	  		cartFound.set("status", request.params.status);
 	  		
 	  		if (request.params.sendToId != null) {
@@ -1037,14 +1037,15 @@ Parse.Cloud.define("submitShoppingCart", function(request, response) {
  		    cartFound.set("ETA", eta);
  		    cartFound.set("deliveryOrder", true);
  		    cartFound.set("submittedDate", new Date());
+ 		    cartFound.set("bidCount", 1);
  		    if (request.params.installationId) {
  		    	cartFound.set("installation", request.params.installationId);	
  		    }
  		    cartFound.set("paymentMethod", request.params.paymentMethod);
- 		    cartFound.save({useMasterKey:true})
+ 		    cartFound.save()
  		    	.then(function(cartUpdated) {
- 		    		response.success(true);
- 		    	});
+ 		    			response.success(true);
+ 		    		});
 	 	},
 	  	error: function(object, err) {
 			logger.send_error(logger.subject("submitShoppingCart", "query shopping cart error."), err);
