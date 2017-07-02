@@ -3581,6 +3581,7 @@ Parse.Cloud.define("getTimeSlot", function(request, response) {
 					
 					slotsFound.forEach(function(slot, idx) {
 						slot.currentBooking = counts[slot.id];
+						console.log("currentBooking:" + counts[slot.id]);
 					});
 					
 					response.success(slotsFound);
