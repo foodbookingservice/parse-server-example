@@ -107,7 +107,7 @@ Parse.Cloud.afterSave("HBShoppingCart", function(request, response) {
 	
 	if (request.object.get("status") == "preparing" && 
 		request.object.get("bidCount") == '1') {
-									  
+		var currentTime1 = new Date();							  
 		var currentTime2 = new Date();
 	    currentTime2.setHours ( currentTime1.getHours() + 8 );
 		var printMsg = currentTime2.getFullYear() + "/" + (currentTime2.getMonth() + 1) + "/" + currentTime2.getDate() + " " + 
