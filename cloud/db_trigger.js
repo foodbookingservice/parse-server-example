@@ -120,7 +120,7 @@ Parse.Cloud.afterSave("HBShoppingCart", function(request, response) {
 		
 		var body = "<Html><body>訂單產生時間: " + printMsg + "<BR>";
 		body += "訂單金額: $" + request.object.get("totalPrice") + "<BR><BR>";
-		body += "送餐時段: " + (eta.getMonth() + 1) + "/" + eta.getDate() + " " + (eta.getHours()+8) + ":" + minutesString + "<BR>";
+		body += "送餐時段: " + request.object.get("etaString") + "<BR>";
 		body += "<h1><a href='" + prop.order_url() + "'>查詢訂單</a></h1>";
 		body += "</body></html>";
 		
