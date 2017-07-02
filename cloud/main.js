@@ -3573,7 +3573,7 @@ Parse.Cloud.define("getTimeSlot", function(request, response) {
     query.find()
 		.then(
 			function (slotsFound) {
-				return Parse.Promise.when(slotsFound, queryCart.fund());
+				return Parse.Promise.when(slotsFound, queryCart.find());
 			},
 			function(error) {
 				response.error(error);
