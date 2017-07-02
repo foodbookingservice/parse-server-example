@@ -3591,8 +3591,15 @@ Parse.Cloud.define("getTimeSlot", function(request, response) {
 						} else {
 							slotObj.currentBooking = 0;	
 						}
-						results.push(slotObj);
 						
+						if (slotObj.currentBooking >= slotObj.capacity) {
+							slotObj.listStyle = "ui-disabled";
+							slotObj.availableQty = 0;
+						} else {
+							slotObj.listStyle = "";
+							slotObj.availableQty = slot.get("capacity") - slotObj.currentBooking;
+						}
+						results.push(slotObj);
 					});
 					
 					response.success(results);
