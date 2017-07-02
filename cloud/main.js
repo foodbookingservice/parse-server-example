@@ -3556,27 +3556,42 @@ Parse.Cloud.define("getTimeSlotByDate", function(request, response) {
 });
 
 Parse.Cloud.define("getTimeSlot", function(request, response) {
-	
-    var dateFrom = new Date(request.params.selectedDate);
-    var dateTo = new Date(request.params.selectedDate);
-	dateTo.setDate(dateTo.getDate() + 1);
-                    
-	var HBShoppingCart = Parse.Object.extend("HBShoppingCart");
-    var queryCart = new Parse.Query(HBShoppingCart);
-    queryCart.exists('submittedDate');
-	queryCart.greaterThan("ETA", dateFrom);
-    queryCart.lessThan("ETA",  dateTo);
-    
-	console.log("dateFrom:" + dateFrom);
-	console.log("dateTo:" + dateTo);
-	
 	var query = new Parse.Query("HBTimeSlot");
 	query.equalTo("enable", true);
 	query.ascending("sinceMidnight");
+	query.find({
+    	success: function(slotsFound) {
+    		response.success(slotsFound);
+    	},
+    	error: function(error) {
+			logger.send_error(logger.subject("getTimeSlot", "getTimeSlot failed."), error);
+      	  	response.error(error);
+    	}
+  	});
+  	
+	/*
     query.find()
 		.then(
 			function (slotsFound) {
 				console.log("slotsFound:" + slotsFound);
+				
+				var dateFrom = new Date(request.params.selectedDate);
+			    var dateTo = new Date(request.params.selectedDate);
+				dateTo.setDate(dateTo.getDate() + 1);
+			                    
+				var HBShoppingCart = Parse.Object.extend("HBShoppingCart");
+			    var queryCart = new Parse.Query(HBShoppingCart);
+			    queryCart.exists('submittedDate');
+				queryCart.greaterThan("ETA", dateFrom);
+			    queryCart.lessThan("ETA",  dateTo);
+			    
+				console.log("dateFrom:" + dateFrom);
+				console.log("dateTo:" + dateTo);
+				
+				
+				
+				
+				
 				return Parse.Promise.when(slotsFound, queryCart.find());
 			},
 			function(error) {
@@ -3601,7 +3616,7 @@ Parse.Cloud.define("getTimeSlot", function(request, response) {
 			function(error) {
 				response.error(error);
 			});
-	
+	*/
 });
 
 Parse.Cloud.define("updateCartETA", function(request, response) {
