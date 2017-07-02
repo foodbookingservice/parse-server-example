@@ -3594,9 +3594,11 @@ Parse.Cloud.define("getTimeSlot", function(request, response) {
 						
 						if (slotObj.currentBooking >= slotObj.capacity) {
 							slotObj.listStyle = "ui-disabled";
+							slotObj.allowSelect = false;
 							slotObj.availableQty = 0;
 						} else {
 							slotObj.listStyle = "";
+							slotObj.allowSelect = true;
 							slotObj.availableQty = slot.get("capacity") - slotObj.currentBooking;
 						}
 						results.push(slotObj);
