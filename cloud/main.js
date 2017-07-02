@@ -3556,8 +3556,7 @@ Parse.Cloud.define("getTimeSlotByDate", function(request, response) {
 });
 
 Parse.Cloud.define("getTimeSlot", function(request, response) {
-	var tmpDate = format(new Date(), 'yyyy-MM-dd');
-    //alert(tmpDate);
+	
     var dateFrom = new Date(request.params.selectedDate);
     var dateTo = new Date(request.params.selectedDate);
 	dateTo.setDate(dateTo.getDate() + 1);
