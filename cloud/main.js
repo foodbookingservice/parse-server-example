@@ -3566,6 +3566,9 @@ Parse.Cloud.define("getTimeSlot", function(request, response) {
     queryCart.exists('submittedDate');
 	queryCart.greaterThan("ETA", dateFrom);
     queryCart.lessThan("ETA",  dateTo);
+    
+	console.log("dateFrom:" + dateFrom);
+	console.log("dateTo:" + dateTo);
 	
 	var query = new Parse.Query("HBTimeSlot");
 	query.equalTo("enable", true);
@@ -3573,6 +3576,7 @@ Parse.Cloud.define("getTimeSlot", function(request, response) {
     query.find()
 		.then(
 			function (slotsFound) {
+				console.log("slotsFound:" + slotsFound);
 				return Parse.Promise.when(slotsFound, queryCart.find());
 			},
 			function(error) {
