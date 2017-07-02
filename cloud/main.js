@@ -3581,12 +3581,17 @@ Parse.Cloud.define("getTimeSlot", function(request, response) {
 					
 					var results = [];
 					slotsFound.forEach(function(slot, idx) {
+						var slotObj = {};
+						slotObj.interval = slot.get("interval");
+						slotObj.capacity = slot.get("capacity");
+						slotObj.id = slot.id;
+						slotObj.sinceMidnight = slot.get("sinceMidnight");
 						if (typeof counts[slot.id] != 'undefined') {
-							slot.currentBooking = counts[slot.id];
+							slotObj.currentBooking = counts[slot.id];
 						} else {
-							slot.currentBooking = 0;	
+							slotObj.currentBooking = 0;	
 						}
-						results.push(slot);
+						results.push(slotObj);
 						
 					});
 					
