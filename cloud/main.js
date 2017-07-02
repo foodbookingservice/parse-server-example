@@ -2295,6 +2295,7 @@ Parse.Cloud.define("availableBizDateOption", function(request, response) {
 			var dateObj = {};
 			dateObj.c_value = (futureTime.getMonth()+1) + "/" + futureTime.getDate() + weekstring[futureTime.getDay()];
 			dateObj.e_value = e_weekstring[futureTime.getDay()];
+			dateObj.full_value = futureTime.getFullYear() + "/" + (futureTime.getMonth()+1) + "/" + futureTime.getDate()
 			
 			availableDate.push(dateObj);
 			//availableDate.push((futureTime.getMonth()+1) + "/" + futureTime.getDate() + weekstring[futureTime.getDay()]);
@@ -3555,11 +3556,17 @@ Parse.Cloud.define("getTimeSlotByDate", function(request, response) {
 });
 
 Parse.Cloud.define("getTimeSlot", function(request, response) {
+	var tmpDate = format(new Date(), 'yyyy-MM-dd');
+    //alert(tmpDate);
+    var dateFrom = new Date(request.params.selectedDate);
+    var dateTo = new Date(request.params.selectedDate);
+	dateTo.setDate(dateTo.getDate() + 1);
+                    
 	var HBShoppingCart = Parse.Object.extend("HBShoppingCart");
     var queryCart = new Parse.Query(HBShoppingCart);
     queryCart.exists('submittedDate');
-	queryCart.greaterThan("ETA", request.params.dateFrom);
-    queryCart.lessThan("ETA",  request.params.dateTo);
+	queryCart.greaterThan("ETA", dateFrom);
+    queryCart.lessThan("ETA",  dateTo);
 	
 	var query = new Parse.Query("HBTimeSlot");
 	query.equalTo("enable", true);
@@ -3575,7 +3582,7 @@ Parse.Cloud.define("getTimeSlot", function(request, response) {
 		.then(
 			function (slotsFound, cartsFound) {
 				
-				var counts = {}; // 放每個 timeslot 目前有多少筆
+				var counts = {}; // 放每個 timeslot 目前有多少訂單
 				cartsFound.forEach(function(cart, idx) {
 					var cartTimeSlot = cart.get("timeSlot");
 					counts[cartTimeSlot] = (counts[cartTimeSlot] || 0) + 1;
