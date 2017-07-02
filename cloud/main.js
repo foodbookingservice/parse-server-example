@@ -3572,7 +3572,19 @@ Parse.Cloud.define("getTimeSlot", function(request, response) {
 		    queryCart.lessThan("ETA",  dateTo);
 		    queryCart.find({
 		    	success: function(cartsFound) {
-				    response.success(cartsFound);
+				    
+				    var counts = {}; // 放每個 timeslot 目前有多少訂單
+					cartsFound.forEach(function(cart, idx) {
+						var cartTimeSlot = cart.get("timeSlot");
+						counts[cartTimeSlot] = (counts[cartTimeSlot] || 0) + 1;
+					});
+					
+					slotsFound.forEach(function(slot, idx) {
+						slot.currentBooking = counts[slot.id];
+					});
+					
+					response.success(slotsFound);
+					
 		    	},
 		    	error: function(error) {
 					logger.send_error(logger.subject("getTimeSlot", "find HBShoppingCart failed."), error);
