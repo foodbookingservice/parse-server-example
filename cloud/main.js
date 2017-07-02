@@ -1029,6 +1029,8 @@ Parse.Cloud.define("submitShoppingCart", function(request, response) {
  			
  			var tempETA = request.params.ETA; // formate: 8/8(四) 13:45
      		if (tempETA != null && tempETA != "") {
+     			cartFound.set("etaString", tempETA);
+     			
      			console.log("tempETA:" + tempETA);
      			var tempDay = tempETA.substring(0, tempETA.indexOf("("));
 				var tempSlot = tempETA.substring(tempETA.indexOf(" ") + 1);
@@ -1039,7 +1041,7 @@ Parse.Cloud.define("submitShoppingCart", function(request, response) {
 				var eta = new Date(new Date().getFullYear() + "/" + tempDay + " " + tempSlot);
 				console.log("eta:" + eta);
 				
-				eta.setMinutes(eta.getMinutes() - 480); // 轉換成 UTC 時間
+				//eta.setMinutes(eta.getMinutes() - 480); // 轉換成 UTC 時間
 			}
  		    cartFound.set("ETA", eta);
  		    cartFound.set("deliveryOrder", true);
