@@ -987,47 +987,58 @@ Parse.Cloud.define("submitShoppingCart", function(request, response) {
 	var query = new Parse.Query("HBShoppingCart");
 	query.get(request.params.cartId, {
 	  	success: function(cartFound) {
-	  		Parse.Cloud.useMasterKey();
-	  		cartFound.set("status", request.params.status);
-	  		
-	  		if (request.params.sendToId != null) {
-	     		var HBUserAddressBook = Parse.Object.extend("HBUserAddressBook");
-			    var addressObj = new HBUserAddressBook();
-				addressObj.id = request.params.sendToId;
-				
-				cartFound.set("sendTo", addressObj);
-				cartFound.set("sendToAddress", request.params.address);
-	     	}
-     		
-     		cartFound.set("shippingFee", 0);
- 		    cartFound.set("totalPrice", eval(request.params.totalPrice));
- 		    if (request.params.contact != "") {
- 		    	cartFound.set("contactPerson", request.params.contact);
- 			}
- 			
- 			var tempETA = request.params.ETA; // formate: 8/8(四) 13:45
-     		if (tempETA != null && tempETA != "") {
-     			cartFound.set("etaString", tempETA);
-     			
-     			var tempDay = tempETA.substring(0, tempETA.indexOf("("));
-				var tempSlot = tempETA.substring(tempETA.indexOf(" ") + 1);
-				var eta = new Date(new Date().getFullYear() + "/" + tempDay + " " + tempSlot);
-				cartFound.set("ETA", eta);
-				//eta.setMinutes(eta.getMinutes() - 480); // 轉換成 UTC 時間
-			}
- 		    
- 		    cartFound.set("deliveryOrder", true);
- 		    cartFound.set("submittedDate", new Date());
- 		    cartFound.set("bidCount", 1);
- 		    if (request.params.installationId) {
- 		    	cartFound.set("installation", request.params.installationId);	
- 		    }
- 		    cartFound.set("paymentMethod", request.params.paymentMethod);
- 		    cartFound.set("timeSlot", request.params.timeSlot);
- 		    cartFound.save()
- 		    	.then(function(cartUpdated) {
- 		    			response.success(true);
- 		    		});
+	  		var queryItem = new Parse.Query("HBShoppingItem");
+			queryItem.equalTo("shoppingCart", cartFound);
+			queryItem.find({
+		    	success: function(itemsFound) {
+		    		Parse.Cloud.useMasterKey();
+			  		cartFound.set("status", request.params.status);
+			  		
+			  		if (request.params.sendToId != null) {
+			     		var HBUserAddressBook = Parse.Object.extend("HBUserAddressBook");
+					    var addressObj = new HBUserAddressBook();
+						addressObj.id = request.params.sendToId;
+						
+						cartFound.set("sendTo", addressObj);
+						cartFound.set("sendToAddress", request.params.address);
+			     	}
+		     		
+		     		cartFound.set("shippingFee", 0);
+		 		    cartFound.set("totalPrice", eval(request.params.totalPrice));
+		 		    if (request.params.contact != "") {
+		 		    	cartFound.set("contactPerson", request.params.contact);
+		 			}
+		 			
+		 			var tempETA = request.params.ETA; // formate: 8/8(四) 13:45
+		     		if (tempETA != null && tempETA != "") {
+		     			cartFound.set("etaString", tempETA);
+		     			
+		     			var tempDay = tempETA.substring(0, tempETA.indexOf("("));
+						var tempSlot = tempETA.substring(tempETA.indexOf(" ") + 1);
+						var eta = new Date(new Date().getFullYear() + "/" + tempDay + " " + tempSlot);
+						cartFound.set("ETA", eta);
+						//eta.setMinutes(eta.getMinutes() - 480); // 轉換成 UTC 時間
+					}
+		 		    
+		 		    cartFound.set("deliveryOrder", true);
+		 		    cartFound.set("submittedDate", new Date());
+		 		    cartFound.set("bidCount", 1);
+		 		    if (request.params.installationId) {
+		 		    	cartFound.set("installation", request.params.installationId);	
+		 		    }
+		 		    cartFound.set("paymentMethod", request.params.paymentMethod);
+		 		    cartFound.set("timeSlot", request.params.timeSlot);
+		 		    cartFound.set("itemsInCart", itemsFound.length);
+		 		    cartFound.save()
+		 		    	.then(function(cartUpdated) {
+		 		    			response.success(true);
+		 		    		});
+				},
+		    	error: function(err) {
+					logger.send_error(logger.subject("submitShoppingCart", "find shopping item error."), err);
+		      	  	response.error(err);
+		    	}
+		  	});
 	 	},
 	  	error: function(object, err) {
 			logger.send_error(logger.subject("submitShoppingCart", "query shopping cart error."), err);
@@ -3572,11 +3583,11 @@ Parse.Cloud.define("getTimeSlot", function(request, response) {
 		    queryCart.lessThan("ETA",  dateTo);
 		    queryCart.find({
 		    	success: function(cartsFound) {
-				    
-				    var counts = {}; // 放每個 timeslot 目前有多少訂單
+		    		
+		    		var counts = {}; // 放每個 timeslot 目前有多少訂單
 					cartsFound.forEach(function(cart, idx) {
 						var cartTimeSlot = cart.get("timeSlot");
-						counts[cartTimeSlot] = (counts[cartTimeSlot] || 0) + 1;
+						counts[cartTimeSlot] = (counts[cartTimeSlot] || 0) + cart.get("itemsInCart");
 					});
 					
 					var results = [];
@@ -3612,8 +3623,6 @@ Parse.Cloud.define("getTimeSlot", function(request, response) {
 		      	  	response.error(error);
 		    	}
 		  	});
-		    
-		    
     	},
     	error: function(error) {
 			logger.send_error(logger.subject("getTimeSlot", "getTimeSlot failed."), error);
