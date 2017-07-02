@@ -2266,7 +2266,7 @@ Parse.Cloud.define("getDeliveryTimeSlot", function(request, response) {
 
 //
 //開放預約單，送達時間能顯示未來的日期
-//暫時先取4天
+//暫時先取3天
 function availableBizDate(bizDate) {
 	var weekstring = ["(日)","(一)","(二)","(三)","(四)","(五)","(六)"];
 	//var bizDate = [true, true, true, false, true, true, false]; 
@@ -2280,7 +2280,7 @@ function availableBizDate(bizDate) {
 		if (bizDate[futureTime.getDay()]) { //有營業才取
 			availableDate.push((futureTime.getMonth()+1) + "/" + futureTime.getDate() + weekstring[futureTime.getDay()]);
 		}
-		if (availableDate.length == 4) break; //先取4天
+		if (availableDate.length == 3) break; //先取3天
 		counter++;
 	}
 	return availableDate;
@@ -2289,7 +2289,7 @@ function availableBizDate(bizDate) {
 //
 //平台營業日
 //開放預約單，送達時間能顯示未來的日期
-//暫時先取4天
+//暫時先取3天
 //
 Parse.Cloud.define("availableBizDateOption", function(request, response) {
 	var bizDate = [];
@@ -2319,7 +2319,7 @@ Parse.Cloud.define("availableBizDateOption", function(request, response) {
 			availableDate.push(dateObj);
 			//availableDate.push((futureTime.getMonth()+1) + "/" + futureTime.getDate() + weekstring[futureTime.getDay()]);
 		}
-		if (availableDate.length == 4) break; //先取3天
+		if (availableDate.length == 3) break; //先取3天
 		counter++;
 	}
 	response.success(availableDate);
