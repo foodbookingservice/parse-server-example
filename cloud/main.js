@@ -2307,6 +2307,7 @@ Parse.Cloud.define("availableBizDateOption", function(request, response) {
 	var availableDayOfWeek = [];
 	
 	var currentTime = new Date() ;
+	currentTime.setDate(currentTime.getDate() + 1); //預約單，所以從明日開始計算
 	var counter = 0;
 	while(true) {
 		var futureTime = new Date(currentTime);
