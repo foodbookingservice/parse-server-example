@@ -280,33 +280,11 @@ Parse.Cloud.define("createShoppingCart", function(request, response) {
     			cart.set("owner", request.user);
     			cart.set("status", "in shopping");
     			cart.set("cartType", request.params.cartType);
+    			cart.set("etaString", "");
     			cart.save(null,{
 					success: function(cartCreated){
 						console.log("create shopping cart:" + cartCreated.id);
-						
-						//產生短網址，之後開啟 Line 團購模式會用到
-						var originalUrl = prop.shorten_url() + "/agent.html?cart=" + cartCreated.id + "&owner=" + cartCreated.get("owner").id;
-						//console.log("originalUrl:" + originalUrl);
-										
-						// generate shorten url
-				    	Parse.Cloud.run("shortenUrlForOrder", {	longUrl: originalUrl }, {
-							success: function(result){
-								cartCreated.set("shortenUrl", result);
-								cartCreated.set("etaString", "");
-								cartCreated.save(null,{
-									success: function(cartUpdated){
-										response.success(cartUpdated);
-								    },
-									error: function(err) {
-										logger.send_error(logger.subject("createShoppingCart", "save new cart"), err); 
-										response.error(err);
-									}		
-								});
-							},
-						 	error: function(error) {
-								response.error(error);
-							}
-						});
+						response.success(cartCreated);
 				    },
 					error: function(err) {
 						logger.send_error(logger.subject("createShoppingCart", "save new cart"), err); 
@@ -1045,6 +1023,7 @@ Parse.Cloud.define("submitShoppingCart", function(request, response) {
  		    	cartFound.set("installation", request.params.installationId);	
  		    }
  		    cartFound.set("paymentMethod", request.params.paymentMethod);
+ 		    cartFound.set("timeSlot", request.params.timeSlot);
  		    cartFound.save()
  		    	.then(function(cartUpdated) {
  		    			response.success(true);
@@ -3451,9 +3430,9 @@ Parse.Cloud.define("getTimeSlotByDate", function(request, response) {
 	console.log("greater:" + ((currentTime.getHours()+8) * 60 + currentTime.getMinutes() + 60));
 	var querySlot = new Parse.Query("HBTimeSlot");
 	querySlot.equalTo("enable", true);
-	if (request.params.isToday == "Yes") { // 如果是今天，只取大於目前時間的時段
-		querySlot.greaterThan("sinceMidnight", (currentTime.getHours()+8) * 60 + currentTime.getMinutes() + 60);
-	}
+	//if (request.params.isToday == "Yes") { // 如果是今天，只取大於目前時間的時段
+	//	querySlot.greaterThan("sinceMidnight", (currentTime.getHours()+8) * 60 + currentTime.getMinutes() + 60);
+	//}
 	querySlot.ascending("sinceMidnight");
 	
     var query = new Parse.Query("HBShoppingItem");
@@ -3474,11 +3453,13 @@ Parse.Cloud.define("getTimeSlotByDate", function(request, response) {
     			}
     		}
     		
+    		// 查店家服務時段
     		var queryStoreSlot = new Parse.Query("HBProductivity");
     		queryStoreSlot.containedIn("store", storeObjArray);
     		queryStoreSlot.include("store");
     		queryStoreSlot.include("timeSlot");
     		
+    		// 查店家開店日期
     		var queryStoreBizDate = new Parse.Query("HBStoreBusinessDate");
     		queryStoreBizDate.containedIn("store", storeObjArray);
     		queryStoreBizDate.include("store");
@@ -3506,7 +3487,6 @@ Parse.Cloud.define("getTimeSlotByDate", function(request, response) {
 					bizDateObj.Sat = bizDate.get("Sat");
 					
 					storeIdInBizDate.push(storeObj.id);
-					console.log("bizDateObj:" + JSON.stringify(bizDateObj));
 					storeBizDateSetting.push(bizDateObj);
 				}
 				
@@ -3516,6 +3496,7 @@ Parse.Cloud.define("getTimeSlotByDate", function(request, response) {
 				console.log("availableSlotFound:" + availableSlotFound.length);
 				console.log("storeSlotsFound:" + storeSlotsFound.length);
 				
+				// 比對出店家有營業的時段
 				for(var i=0 ; i<storeSlotsFound.length ; i++) {
 					var storeSlot = storeSlotsFound[i];
 					var storeObj = storeSlot.get("store");
@@ -3532,8 +3513,7 @@ Parse.Cloud.define("getTimeSlotByDate", function(request, response) {
 					}
 				}
 				
-				console.log("storeDataArray:" + storeDataArray.length);
-				var reasonsForAllStore = []; //此時段不可選的原因
+				var reasonsForAllStore = []; // 紀錄時段不可選的原因
 				for (var i=0 ; i<availableSlotFound.length ; i++) {
 					var reasonsForEachStore = [];
 						
@@ -3545,59 +3525,69 @@ Parse.Cloud.define("getTimeSlotByDate", function(request, response) {
 							var storeObj = p.get("store");
 							if (availableSlotFound[i].id == p.get("timeSlot").id) {
 								
-								if (request.params.isToday == "Yes") {
-									if (storeObj.get("reservationUnit") == "day") {
-										reasonsForEachStore.push(storeObj.get("storeName") + "-需提前" + storeObj.get("reservation") + "天訂購");
-									
-									} else if (storeObj.get("reservationUnit") == "minute") {
-										
-										if (p.get("sinceMidnight") < (((currentTime.getHours()+8) * 60 ) + currentTime.getMinutes() + storeObj.get("reservation"))) {
-											reasonsForEachStore.push(storeObj.get("storeName") + "-需提前" + storeObj.get("reservation") + "分鐘訂購");
-										} else {
-											reasonsForEachStore.push("OK");
-										}
-									
-									} else {
-										var storeSettingObj = storeBizDateSetting[storeIdInBizDate.indexOf(storeObj.id)];
-										var storeOpenOnDay = storeSettingObj[request.params.dayOfWeek];
-										
-										if (!storeOpenOnDay) {
-											reasonsForEachStore.push(storeObj.get("storeName") + "-公休");
-										} else {
-											if (!p.get("serviceOpen")) {
-												reasonsForEachStore.push(storeObj.get("storeName") + "-休息時段");
-											} else {
-												reasonsForEachStore.push("OK");
-											}
-										}
-									}
+								var storeSettingObj = storeBizDateSetting[storeIdInBizDate.indexOf(storeObj.id)];
+								var storeOpenOnDay = storeSettingObj[request.params.dayOfWeek];
+								
+								if (!storeOpenOnDay) {
+									reasonsForEachStore.push(storeObj.get("storeName") + "-公休");
 								} else {
-									var storeSettingObj = storeBizDateSetting[storeIdInBizDate.indexOf(storeObj.id)];
-									var storeOpenOnDay = storeSettingObj[request.params.dayOfWeek];
-									
-									if (!storeOpenOnDay) {
-										reasonsForEachStore.push(storeObj.get("storeName") + "-公休");
+									if (!p.get("serviceOpen")) {
+										reasonsForEachStore.push(storeObj.get("storeName") + "-休息時段");
 									} else {
-										if (!p.get("serviceOpen")) {
-											reasonsForEachStore.push(storeObj.get("storeName") + "-休息時段");
-										} else {
-											reasonsForEachStore.push("OK");
-										}
+										reasonsForEachStore.push("OK");
 									}
 								}
 								break;
 							}
 						}
-						//console.log(storeObjArray[j].get("storeName") + " " + availableSlotFound[i].get("interval") + " " + slotIsAvailableForThisStore);
-						
 						
 					}
-					//console.log("slot:" + i + "-reasons:" + reasonsForEachStore);
+					
 					reasonsForAllStore.push(reasonsForEachStore);
 				}
-				//console.log("reasonsForEachStore:" + reasonsForAllStore);
+				
 				response.success([availableSlotFound, reasonsForAllStore]);
 			}, 
+			function(error) {
+				response.error(error);
+			});
+	
+});
+
+Parse.Cloud.define("getTimeSlot", function(request, response) {
+	var HBShoppingCart = Parse.Object.extend("HBShoppingCart");
+    var queryCart = new Parse.Query(HBShoppingCart);
+    queryCart.exists('submittedDate');
+	queryCart.greaterThan("ETA", request.params.dateFrom);
+    queryCart.lessThan("ETA",  request.params.dateTo);
+	
+	var query = new Parse.Query("HBTimeSlot");
+	query.equalTo("enable", true);
+	query.ascending("sinceMidnight");
+    query.find()
+		.then(
+			function (slotsFound) {
+				return Parse.Promise.when(slotsFound, queryCart.fund());
+			},
+			function(error) {
+				response.error(error);
+			})
+		.then(
+			function (slotsFound, cartsFound) {
+				
+				var counts = {}; // 放每個 timeslot 目前有多少筆
+				cartsFound.forEach(function(cart, idx) {
+					var cartTimeSlot = cart.get("timeSlot");
+					counts[cartTimeSlot] = (counts[cartTimeSlot] || 0) + 1;
+				});
+				
+				slotsFound.forEach(function(slot, idx) {
+					slot.currentBooking = counts[slot.id];
+				});
+				
+				response.success(slotsFound);
+				
+			},
 			function(error) {
 				response.error(error);
 			});
