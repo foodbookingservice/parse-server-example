@@ -3579,12 +3579,18 @@ Parse.Cloud.define("getTimeSlot", function(request, response) {
 						counts[cartTimeSlot] = (counts[cartTimeSlot] || 0) + 1;
 					});
 					
+					var results = [];
 					slotsFound.forEach(function(slot, idx) {
-						slot.currentBooking = counts[slot.id];
-						console.log("currentBooking:" + counts[slot.id]);
+						if (typeof counts[slot.id] != 'undefined') {
+							slot.currentBooking = counts[slot.id];
+						} else {
+							slot.currentBooking = 0;	
+						}
+						results.push(slot);
+						
 					});
 					
-					response.success(slotsFound);
+					response.success(results);
 					
 		    	},
 		    	error: function(error) {
