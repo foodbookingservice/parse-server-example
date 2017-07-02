@@ -991,6 +991,12 @@ Parse.Cloud.define("submitShoppingCart", function(request, response) {
 			queryItem.equalTo("shoppingCart", cartFound);
 			queryItem.find({
 		    	success: function(itemsFound) {
+		    		var sumOfItems = 0;
+		    		itemsFound.forEach(function(item, idx) {
+						sumOfItems = sumOfItems + item.get("qty");
+					});
+		    		
+		    		
 		    		Parse.Cloud.useMasterKey();
 			  		cartFound.set("status", request.params.status);
 			  		
@@ -1028,7 +1034,7 @@ Parse.Cloud.define("submitShoppingCart", function(request, response) {
 		 		    }
 		 		    cartFound.set("paymentMethod", request.params.paymentMethod);
 		 		    cartFound.set("timeSlot", request.params.timeSlot);
-		 		    cartFound.set("itemsInCart", itemsFound.length);
+		 		    cartFound.set("itemsInCart", sumOfItems);
 		 		    cartFound.save()
 		 		    	.then(function(cartUpdated) {
 		 		    			response.success(true);
