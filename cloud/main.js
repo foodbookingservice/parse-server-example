@@ -3561,7 +3561,26 @@ Parse.Cloud.define("getTimeSlot", function(request, response) {
 	query.ascending("sinceMidnight");
 	query.find({
     	success: function(slotsFound) {
-    		response.success(slotsFound);
+    		var dateFrom = new Date(request.params.selectedDate);
+		    var dateTo = new Date(request.params.selectedDate);
+			dateTo.setDate(dateTo.getDate() + 1);
+		                    
+			var HBShoppingCart = Parse.Object.extend("HBShoppingCart");
+		    var queryCart = new Parse.Query(HBShoppingCart);
+		    queryCart.exists('submittedDate');
+			queryCart.greaterThan("ETA", dateFrom);
+		    queryCart.lessThan("ETA",  dateTo);
+		    queryCart.find({
+		    	success: function(cartsFound) {
+				    response.success(cartsFound);
+		    	},
+		    	error: function(error) {
+					logger.send_error(logger.subject("getTimeSlot", "find HBShoppingCart failed."), error);
+		      	  	response.error(error);
+		    	}
+		  	});
+		    
+		    
     	},
     	error: function(error) {
 			logger.send_error(logger.subject("getTimeSlot", "getTimeSlot failed."), error);
