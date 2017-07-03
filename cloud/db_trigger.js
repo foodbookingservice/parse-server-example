@@ -119,12 +119,13 @@ Parse.Cloud.afterSave("HBShoppingCart", function(request, response) {
 		if (minutesString == "0") minutesString = "00";
 		
 		var body = "<Html><body>訂單產生時間: " + printMsg + "<BR>";
-		body += "訂單金額: $" + request.object.get("totalPrice") + "<BR><BR>";
+		body += "金額: $" + request.object.get("totalPrice") + "<BR>";
+		body += "份數: $" + request.object.get("itemsInCart") + "<BR>";
 		body += "送餐時段: " + request.object.get("etaString") + "<BR>";
 		body += "<h1><a href='" + prop.order_url() + "'>查詢訂單</a></h1>";
 		body += "</body></html>";
 		
-	  	var subject = "有一筆新訂單產生，訂單編號 " + request.object.id;
+	  	var subject = "新訂單產生，編號 " + request.object.id;
 	  	mail.send_notify(prop.admin_mail(), "", subject, body);
     	
 		
