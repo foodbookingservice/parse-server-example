@@ -29,39 +29,24 @@
 <body id="main">
  
  	<ul class="nav nav-pills">
- 		<li role="presentation" class="dropdown"><a href="https://hungrybeedashboard.herokuapp.com/apps/HungryBee/" target=_new>資料庫後台</a></li>
-            
+    	<li role="presentation" class="dropdown">
+    		<a href="https://hungrybeedashboard.herokuapp.com/apps/KingBreakfast/" target=_new>資料庫後台</a>
+    	</li>
         <li role="presentation" class="dropdown">
-            <a class="dropdown-toggle" data-toggle="dropdown" href="#" role="button" aria-haspopup="true" aria-expanded="false">
-                訂單查詢 <span class="caret"></span>
-            </a>
-            <ul class="dropdown-menu" aria-labelledby="dropdownMenu1">
-                <li><a href="index.html?mode=id">訂單編號</a></li>
-                <li><a href="index.html?mode=date">訂單日期</a></li>
-            </ul>
-        </li>
-        
-       
-        <li role="presentation" class="dropdown active">
-        	<a class="dropdown-toggle" data-toggle="dropdown" href="#" role="button" aria-haspopup="true" aria-expanded="false">
-                餐點資料維護 <span class="caret"></span>
-            </a>
-        	<ul class="dropdown-menu" aria-labelledby="dropdownMenu1">
-                <li><a href="createStoreProfile.html">新增供應者</a></li>
-                <li><a href="updateStoreProfile.html">更新供應者圖片</a></li>
-                <li><a href="updateFoodProfile.html">更新餐點圖片</a></li>
-            </ul>
-        </li>
-        
+    		<a href="orderManagement.html">訂單查詢</a>
+    	</li>
+    	<li role="presentation" class="dropdown">
+    		<a href="createStoreProfile.html">新增餐點</a>
+    	</li>
+    	<li role="presentation" class="dropdown">
+    		<a href="updateFoodProfile.html">更新餐點圖片</a>
+    	</li>
         <li role="presentation" class="dropdown">
-            <a class="dropdown-toggle" data-toggle="dropdown" href="#" role="button" aria-haspopup="true" aria-expanded="false">
-                其他 <span class="caret"></span>
-            </a>
-            <ul class="dropdown-menu" aria-labelledby="dropdownMenu1">
-                <li><a href="" onclick="parseLogOut()">登出</a></li>
-            </ul>
+            <a href="" onclick="parseLogOut()">登出</a>
         </li>
     </ul>
+    
+ 	
 
     <script>
 		var currentUser = Parse.User.current();

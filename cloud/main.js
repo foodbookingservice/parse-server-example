@@ -3810,3 +3810,19 @@ Parse.Cloud.define("UpdateProfile", function(request, response) {
         useMasterKey: true
 	});
 });
+
+
+Parse.Cloud.define("loadTimeSlotOptions", function(request, response) {
+	var query = new Parse.Query("HBTimeSlot");
+	query.equalTo("enable", true);
+	query.ascending("sinceMidnight");
+	query.find({
+    	success: function(slotsFound) {
+    		response.success(slotsFound);	
+    	},
+    	error: function(error) {
+			logger.send_error(logger.subject("loadTimeSlotOptions", "loadTimeSlotOptions failed."), error);
+      	  	response.error(error);
+    	}
+  	});
+});
