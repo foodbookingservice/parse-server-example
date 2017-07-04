@@ -1,24 +1,44 @@
 <!DOCTYPE html>
 <html>
 <head>
-	<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
-	<script src="http://www.w3schools.com/lib/w3data.js"></script>
-	<script src="scripts/parse-1.6.14.min.js"></script>
-    <script src="scripts/jquery-2.2.0.min.js"></script>
+	<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    
+    <!-- w3c -->
+    <script src="http://www.w3schools.com/lib/w3data.js"></script>
+    
+    <!-- jquery & jquery mobile lib -->
+    <script src="external/jquery-2.2.0.min.js"></script>
+    <script src="external/jquery.printElement.min.js"></script>
+    
+    
+    <!-- bootstrap -->
     <script src="scripts/bootstrap.min.js"></script>
-    <script src="scripts/hbUtility.js"></script>
-    <script src="hungrybee.js"></script>
-    <script src="scripts/hbParseInit.js"></script>
-    <script src="https://ajax.googleapis.com/ajax/libs/jqueryui/1.10.2/jquery-ui.min.js"></script>
-    <script src="scripts/jquery.switchButton.js"></script>
-    <link href="https://code.jquery.com/ui/1.10.4/themes/ui-lightness/jquery-ui.css" rel="stylesheet">
-    <script src="https://code.jquery.com/ui/1.10.4/jquery-ui.js"></script>
-
-    <link href="css/jquery.switchButton.css" rel="stylesheet">
-    <link href="css/main.css" rel="stylesheet">
-    <link href="css/bootstrap.css" rel="stylesheet" />
-    <link href="css/storeManagement.css" rel="stylesheet" />
-    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.4.0/css/font-awesome.min.css" rel="stylesheet" type="text/css">
+    
+    <!-- parse lib -->
+    <script src="scripts/parse-1.6.14.min.js"></script>
+    
+    <!-- handlebars -->
+    <script src="scripts/handlebars-v4.0.5.js"></script>
+    
+    <!-- app's lib -->
+    <script src="js/parse-conn.js"></script>
+    <script src="js/app.js"></script>
+    
+    <!-- jquery mobile style -->
+    <link rel="stylesheet" href="external/jquery-mobile/jquery.mobile-1.4.5.css" />
+    
+    <!-- bootstrap style -->
+    <link rel="stylesheet" href="css/bootstrap.min.css" >
+    <link rel="stylesheet" href="css/bootstrap-theme.min.css">
+    
+    <title>國王早餐-新增餐點</title>
+    
+	<script>
+	    $(function(){
+			checkIfUserLoggedIn();
+		});
+	</script>
 		
 	<script type="text/javascript">
 		function go() {
