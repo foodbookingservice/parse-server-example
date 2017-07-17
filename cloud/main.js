@@ -3793,7 +3793,7 @@ Parse.Cloud.define("addTrafficReport", function(request, response) {
 });
 
 
-///
+/// 國王早餐
 Parse.Cloud.define("UpdateProfile", function(request, response) {
 	var userFound = request.user;
 	console.log("userFound:" + JSON.stringify(userFound));
@@ -3825,4 +3825,49 @@ Parse.Cloud.define("loadTimeSlotOptions", function(request, response) {
       	  	response.error(error);
     	}
   	});
+});
+
+Parse.Cloud.define("queryOrder", function(request, response) {
+	var HBShoppingCart = Parse.Object.extend("HBShoppingCart");
+    var query = new Parse.Query(HBShoppingCart);
+    query.exists('submittedDate');
+	
+    query.greaterThan("ETA", request.params.dateFrom);
+    query.lessThan("ETA", request.params.dateTo);
+    //if (request.params.timeSlot != "all") {
+    if (request.params.timeSlot != "all") {
+    	query.equalTo("timeSlot", request.params.timeSlot);
+    }
+    query.ascending("ETA");
+    query.find({
+        success: function (carts) {
+        	var cartDictionary = {};
+        	var cartArray = [];
+        	carts.forEach(function(cart, idx) {
+        		var dummyCart = Parse.Object.extend("HBShoppingCart").createWithoutData(cart.id);
+				cartArray.push(dummyCart);
+				cartDictionary[cart.id] = { cartObj : cart.toJSON(), 
+										   itemsInCart : [] 
+										   };
+        	});
+        	
+        	var HBShoppingItem = Parse.Object.extend("HBShoppingItem");
+		    var queryItem = new Parse.Query(HBShoppingItem);
+		    queryItem.containedIn("shoppingCart", cartArray);
+		    queryItem.include("meal");
+		    queryItem.find({
+		        success: function (itemsFound) {
+		        	response.success(itemsFound);
+		        }, error: function (error) {
+		            logger.send_error(logger.subject("loadTimeSlotOptions", "loadTimeSlotOptions failed."), error);
+      	  			response.error(error);
+		        }
+		    });
+		    
+        }, error: function (error) {
+            logger.send_error(logger.subject("loadTimeSlotOptions", "loadTimeSlotOptions failed."), error);
+      	  	response.error(error);
+        }
+
+    });
 });

@@ -51,6 +51,11 @@ function loadTimeSlot() {
 	});
 }
 
+function prepareDatePicker() {
+	$("#date-start" ).datepicker();
+	$("#date-end" ).datepicker();	
+}
+
 var parseLogOut = function () {
 
     Parse.User.logOut().then(() => {
@@ -86,17 +91,26 @@ $(document).on("click", "#search", function(event) {
     var dateFrom = new Date(tmpDate);
     var dateTo = new Date(tmpDate);
 
-	// 日期選項
-    var slectVal = $("#select-day").val();
-    if (slectVal === "today") {
-        dateTo.setDate(dateTo.getDate() + 1);
-    } else if (slectVal === "yestday") {
-        dateFrom.setDate(dateFrom.getDate() - 1);
-        dateTo.setDate(dateFrom.getDate() + 1);
-    } else if (slectVal === "tomorrow") {
-        dateFrom.setDate(dateFrom.getDate() + 1);
-        dateTo.setDate(dateFrom.getDate() + 1);
-    }
+	if ($('input[name=queryDateType]:checked').val() == "shortcut") {
+		// 日期選項
+	    var slectVal = $("#select-day").val();
+	    if (slectVal === "today") {
+	        dateTo.setDate(dateTo.getDate() + 1);
+	    } else if (slectVal === "yestday") {
+	        dateFrom.setDate(dateFrom.getDate() - 1);
+	        dateTo.setDate(dateFrom.getDate() + 1);
+	    } else if (slectVal === "tomorrow") {
+	        dateFrom.setDate(dateFrom.getDate() + 1);
+	        dateTo.setDate(dateFrom.getDate() + 1);
+	    }	
+	} else {
+		dateFrom = new Date($("#date-start").val());
+    	dateTo = new Date($("#date-end").val());
+    	dateTo.setDate(dateTo.getDate() + 1);
+	}
+	
+	
+	
     
     // 時段選項
     var selectedTimeSlot = $("#select-timeslot").val();
@@ -125,75 +139,45 @@ Handlebars.registerHelper("plus1", function(idx) {
 
 var searchOrder = function (dateFrom, dateTo, timeSlot) {
 	    $("#orderTableBody tr").remove();
-	    var HBShoppingCart = Parse.Object.extend("HBShoppingCart");
-	    var query = new Parse.Query(HBShoppingCart);
-	    query.exists('submittedDate');
-		
-	    query.greaterThan("ETA", dateFrom);
-	    query.lessThan("ETA", dateTo);
-	    //if (request.params.timeSlot != "all") {
-	    if (timeSlot != "all") {
-	    	query.equalTo("timeSlot", timeSlot);
-	    }
-	    query.ascending("ETA");
-	    query.find({
-	        success: function (carts) {
-	        	var cartDictionary = {};
-	        	var cartArray = [];
-	        	carts.forEach(function(cart, idx) {
-	        		var dummyCart = Parse.Object.extend("HBShoppingCart").createWithoutData(cart.id);
-    				cartArray.push(dummyCart);
-    				cartDictionary[cart.id] = { cartObj : cart.toJSON(), 
-    										   itemsInCart : [] 
-    										   };
-	        	});
+	    
+	    Parse.Cloud.run("queryOrder", 
+		{	
+			dateFrom: dateFrom,
+			dateTo: dateTo,
+			timeSlot : timeSlot
+		}, 
+		{
+			success: function(itemsFound){
+				var itemsDictionary = {};
+	        	itemsFound.forEach(function(item, idx) {
+					var tempCart = cartDictionary[item.get("shoppingCart").id];
+					tempCart.itemsInCart.push(item.toJSON());
+					
+												 
+					var tempItem = itemsDictionary[item.get("meal").id];
+					if (!tempItem) {
+						itemValue = {itemName: item.get("meal").get("mealName"),
+									sumOfItem : item.get("qty")
+												 };
+						itemsDictionary[item.get("meal").id] = itemValue;
+					} else {
+						tempItem.sumOfItem = tempItem.sumOfItem + item.get("qty");
+					}
+				});
 	        	
-	        	var HBShoppingItem = Parse.Object.extend("HBShoppingItem");
-			    var queryItem = new Parse.Query(HBShoppingItem);
-			    queryItem.containedIn("shoppingCart", cartArray);
-			    queryItem.include("meal");
-			    queryItem.find({
-			        success: function (itemsFound) {
-			        	var itemsDictionary = {};
-			        	itemsFound.forEach(function(item, idx) {
-							var tempCart = cartDictionary[item.get("shoppingCart").id];
-							tempCart.itemsInCart.push(item.toJSON());
-							
-														 
-							var tempItem = itemsDictionary[item.get("meal").id];
-							if (!tempItem) {
-								itemValue = {itemName: item.get("meal").get("mealName"),
-											sumOfItem : item.get("qty")
-														 };
-								itemsDictionary[item.get("meal").id] = itemValue;
-							} else {
-								tempItem.sumOfItem = tempItem.sumOfItem + item.get("qty");
-							}
-						});
-			        	
-			        	
-			        	$("#orderTableBody").html("");
-			        	var template = Handlebars.compile( $("#summaryByBuyer-template").html() );
-						$("#orderTableBody").html( template(cartDictionary) );
-						
-			        	$("#foodCollection").html("");
-			        	var template = Handlebars.compile( $("#foodCollection-template").html() );
-						$("#foodCollection").html( template(itemsDictionary) );
-						
-			        	
-			
-			        }, error: function (e) {
-			            console.log(e);
-			        }
-			
-			    });
-			    
-	        }, error: function (e) {
-	            console.log(e);
-	        }
-	
-	    });
-	
+	        	
+	        	$("#orderTableBody").html("");
+	        	var template = Handlebars.compile( $("#summaryByBuyer-template").html() );
+				$("#orderTableBody").html( template(cartDictionary) );
+				
+	        	$("#foodCollection").html("");
+	        	var template = Handlebars.compile( $("#foodCollection-template").html() );
+				$("#foodCollection").html( template(itemsDictionary) );
+			},
+		 	error: function(error) {
+		 		console.log("error:" + error.message);
+			}
+		});
 	};
 	
 	
@@ -211,3 +195,6 @@ function printDiv(divName) {
 
      document.body.innerHTML = originalContents;
 }
+
+
+

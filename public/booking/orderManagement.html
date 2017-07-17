@@ -10,8 +10,9 @@
     <!-- jquery & jquery mobile lib -->
     <script src="external/jquery-2.2.0.min.js"></script>
     <script src="external/jquery.printElement.min.js"></script>
+    <script src="external/jquery-ui.js"></script>
     
-    
+        
     <!-- bootstrap -->
     <script src="scripts/bootstrap.min.js"></script>
     
@@ -39,6 +40,9 @@
 			checkIfUserLoggedIn();
 			
 			loadTimeSlot();
+			
+			prepareDatePicker();
+			
 		});
 	</script>
 	
@@ -58,39 +62,47 @@
 
         <div class="panel-body">
             <div>
-				<div class="ui-grid-d" >
-					<div class="ui-block-a" style="width:10%">
-		    			<label>出餐日:</label>
+            	
+				<div class="form-group" >
+						<lable><b>選擇出餐日期:</b></label>
+		    	</div>
+		    	<div class="form-group" >
+		    		<div class="form-inline" >
+		    			<input class="form-check-input" type="radio" name="queryDateType" value="shortcut" checked>
+						<lable>快速查詢:</label>
+		    		
 	                    <select class="form-control" id="select-day">
 	                        <option value="today">今日</option>
 	                        <option value="yestday">昨日</option>
 	                        <option value="tomorrow">明日</option>
 	                    </select>
-		    		</div>
-		    		<div class="ui-block-b" style="width:2%">
-		    			
-		    		</div>
-		    		<div class="ui-block-c" style="width:10%">
-		    			<label>出餐時段:</label>
-	                    <select class="form-control" id="select-timeslot">
-	                    </select>
-		    		</div>
-		    		<div class="ui-block-d" style="width:2%">
-		    			
-		    		</div>
-		    		<div class="ui-block-e" style="width:40%">
-		    			<div class="ui-grid-d" >
-							<div class="ui-block-a" style="width:17%">
-				    			<label>&nbsp;</label>
-		    					<button type="submit" class="btn btn-default" id="search">查詢</button>
-				    		</div>
-				    		<div class="ui-block-b" style="width:30%">
-				    			<label>&nbsp;</label>
-		    					<button class="btn btn-default" onclick="printResult()">列印查詢結果</button>
-				    		</div>
-				    	</div>
-		    		</div>
+	                 </div>
+	             </div>
+	             <div class="form-group" >
+	             	<div class="form-inline" >
+	                    <input class="form-check-input" type="radio" name="queryDateType" value="userDefine">
+						<lable>區間查詢:</label>
+						<input type="text" id="date-start"> ~ <input type="text" id="date-end">
+					</div>
 				</div>
+				<div class="form-group" >
+					<lable><b>選擇出餐時段:</b></label>
+				</div>
+				
+				<div class="form-group" >
+					<div class="form-inline">
+						<select class="form-control" id="select-timeslot">
+	                    </select>
+	                </div>
+	            </div>
+	            <div class="form-group" >
+					<div class="form-inline">
+						<button type="submit" class="btn btn-default" id="search">查詢</button>
+		    			<label>&nbsp;</label>
+		    			<button class="btn btn-default" onclick="printResult()">列印查詢結果</button>		
+					</div>
+				</div>
+				
             </div>
         </div>
         
