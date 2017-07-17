@@ -3857,7 +3857,7 @@ Parse.Cloud.define("queryOrder", function(request, response) {
 		    queryItem.include("meal");
 		    queryItem.find({
 		        success: function (itemsFound) {
-		        	response.success(itemsFound);
+		        	response.success([itemsFound, cartDictionary]);
 		        }, error: function (error) {
 		            logger.send_error(logger.subject("loadTimeSlotOptions", "loadTimeSlotOptions failed."), error);
       	  			response.error(error);

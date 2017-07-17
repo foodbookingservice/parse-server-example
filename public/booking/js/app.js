@@ -147,7 +147,9 @@ var searchOrder = function (dateFrom, dateTo, timeSlot) {
 			timeSlot : timeSlot
 		}, 
 		{
-			success: function(itemsFound){
+			success: function(results){
+				var itemsFound = results[0];
+				var cartDictionary = results[1];
 				var itemsDictionary = {};
 	        	itemsFound.forEach(function(item, idx) {
 					var tempCart = cartDictionary[item.get("shoppingCart").id];
