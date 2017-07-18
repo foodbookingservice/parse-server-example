@@ -118,97 +118,50 @@ $(document).on("click", "#search", function(event) {
     
 });
 
-// 格式化訂單送出時間
-Handlebars.registerHelper("formatDate", function(dateObj) {
-	if (dateObj != null) {
-		var d = new Date(dateObj.iso);
-		var minString = d.getMinutes();
-		if (minString == "0") minString = "00";
-		
-		return (d.getMonth() + 1) + "/" + d.getDate() + " " + d.getHours() + ":" + minString;
-	} else {
-		return "";	
-	}	 
-});
 
-// 格式化訂單送出時間
-Handlebars.registerHelper("plus1", function(idx) {
-	return idx + 1;	 
-});
 
 
 var searchOrder = function (dateFrom, dateTo, timeSlot) {
-	    $("#orderTableBody tr").remove();
-	    var HBShoppingCart = Parse.Object.extend("HBShoppingCart");
-	    var query = new Parse.Query(HBShoppingCart);
-	    query.exists('submittedDate');
-		
-	    query.greaterThan("ETA", dateFrom);
-	    query.lessThan("ETA", dateTo);
-	    //if (request.params.timeSlot != "all") {
-	    if (timeSlot != "all") {
-	    	query.equalTo("timeSlot", timeSlot);
-	    }
-	    query.ascending("ETA");
-	    query.find({
-	        success: function (carts) {
-	        	var cartDictionary = {};
-	        	var cartArray = [];
-	        	carts.forEach(function(cart, idx) {
-	        		var dummyCart = Parse.Object.extend("HBShoppingCart").createWithoutData(cart.id);
-    				cartArray.push(dummyCart);
-    				cartDictionary[cart.id] = { cartObj : cart.toJSON(), 
-    										   itemsInCart : [] 
-    										   };
-	        	});
-	        	
-	        	var HBShoppingItem = Parse.Object.extend("HBShoppingItem");
-			    var queryItem = new Parse.Query(HBShoppingItem);
-			    queryItem.containedIn("shoppingCart", cartArray);
-			    queryItem.include("meal");
-			    queryItem.find({
-			        success: function (itemsFound) {
-			        	var itemsDictionary = {};
-			        	itemsFound.forEach(function(item, idx) {
-							var tempCart = cartDictionary[item.get("shoppingCart").id];
-							tempCart.itemsInCart.push(item.toJSON());
-							
-														 
-							var tempItem = itemsDictionary[item.get("meal").id];
-							if (!tempItem) {
-								itemValue = {itemName: item.get("meal").get("mealName"),
-											sumOfItem : item.get("qty")
-														 };
-								itemsDictionary[item.get("meal").id] = itemValue;
-							} else {
-								tempItem.sumOfItem = tempItem.sumOfItem + item.get("qty");
-							}
-						});
-			        	
-			        	
-			        	$("#orderTableBody").html("");
-			        	var template = Handlebars.compile( $("#summaryByBuyer-template").html() );
-						$("#orderTableBody").html( template(cartDictionary) );
-						
-			        	$("#foodCollection").html("");
-			        	var template = Handlebars.compile( $("#foodCollection-template").html() );
-						$("#foodCollection").html( template(itemsDictionary) );
-						
-			        	
+	Parse.Cloud.run("queryOrder", 
+		{	
+			dateFrom: dateFrom,
+			dateTo: dateTo,
+			timeSlot: timeSlot
+		}, 
+		{
+		success: function(results){
+			var itemsFound = results[0];
+			var cartDictionary = results[1];
+			var itemsDictionary = {};
+        	itemsFound.forEach(function(item, idx) {
+				var tempCart = cartDictionary[item.get("shoppingCart").id];
+				tempCart.itemsInCart.push(item.toJSON());
+				
+											 
+				var tempItem = itemsDictionary[item.get("meal").id];
+				if (!tempItem) {
+					itemValue = {itemName: item.get("meal").get("mealName"),
+								sumOfItem : item.get("qty")
+											 };
+					itemsDictionary[item.get("meal").id] = itemValue;
+				} else {
+					tempItem.sumOfItem = tempItem.sumOfItem + item.get("qty");
+				}
+			});
+        	
+        	$("#orderTableBody").html("");
+        	var template = Handlebars.compile( $("#summaryByBuyer-template").html() );
+			$("#orderTableBody").html( template(cartDictionary) );
 			
-			        }, error: function (e) {
-			            console.log(e);
-			        }
-			
-			    });
-			    
-	        }, error: function (e) {
-	            console.log(e);
-	        }
-	
-	    });
-	
-	};
+        	$("#foodCollection").html("");
+        	var template = Handlebars.compile( $("#foodCollection-template").html() );
+			$("#foodCollection").html( template(itemsDictionary) );
+		},
+	 	error: function(error) {
+	 		console.log("error:" + error.message);
+		}
+	});
+}; //~end searchOrder
 	
 	
 function printResult() {
@@ -227,4 +180,72 @@ function printDiv(divName) {
 }
 
 
+function loadMeals() {
+	
+	Parse.Cloud.run("getMealsOfFoodStore", 
+		{	
+			displayAll: true,
+			storeId: "R0YAD62ROf"
+		}, 
+		{
+		success: function(foodFound){
+			var foods = [];
+        	foodFound.forEach(function(food, idx) {
+				foods.push(food.toJSON());
+			});
+        	
+        	$("#mealTableBody").html("");
+        	var template = Handlebars.compile( $("#mealCollection-template").html() );
+			$("#mealTableBody").html( template(foods) );
+		},
+	 	error: function(error) {
+	 		console.log("error:" + error.message);
+		}
+	});
+}
 
+
+function openModal(obj) {
+	console.log($(obj).attr('objId'))	;
+	
+	$("#foodNameUpdate").val($(obj).attr('food-name'));
+	$("#priceUpdate").val($(obj).attr('price'));
+	$("#briefUpdate").val($(obj).attr('brief'));
+	$("#foodIdUpdate").val($(obj).attr('objectid'));
+	
+	if ($(obj).attr('online') == "true") {
+		$("#onlineUpdate").attr("checked", "checked");
+	}
+	
+	$("#editModal").modal();
+}
+
+
+$(document).on("click", "#saveFood", function(event) {
+	//
+	var foodId = $("#foodIdUpdate").val();
+    var foodName = $("#foodNameUpdate").val();
+    var foodPrice = $("#priceUpdate").val();
+    var foodBrief = $("#briefUpdate").val();
+    var foodOnline = ($('#onlineUpdate').is(":checked"));
+    
+    /*
+    Parse.Cloud.run("updateFood", 
+		{	
+			foodId: foodId,
+			foodName: foodName,
+			foodPrice: foodPrice,
+			foodBrief: foodBrief,
+			foodOnline: foodOnline
+		}, 
+		{
+		success: function(foodFound){
+			$("#editModal").modal("hide");
+			loadMeals();
+		},
+	 	error: function(error) {
+	 		console.log("error:" + error.message);
+		}
+	});
+	*/
+});

@@ -67,7 +67,9 @@ Parse.Cloud.define("getMealsOfFoodStore", function(request, response) {
 	
 	var query = new Parse.Query("HBMealSet");
 	query.equalTo("belongTo", store); 
-	query.equalTo("online", true);
+	if (request.params.displayAll == null) {
+		query.equalTo("online", true);	
+	}
 	query.include("foodImage"); 
 	query.include("thumbnail");
 	query.include("belongTo");
@@ -3870,4 +3872,27 @@ Parse.Cloud.define("queryOrder", function(request, response) {
         }
 
     });
+});
+
+
+Parse.Cloud.define("updateFood", function(request, response) {
+			
+	//get food info
+	var query = new Parse.Query("HBMealSet");		
+	query.get(request.params.foodId)
+		.then(function(foodFound) {
+			foodFound.set("mealName", request.params.foodName);
+		    foodFound.set("price", eval(request.params.foodPrice));
+		    foodFound.set("brief", request.params.foodBrief);
+		    foodFound.set("online", request.params.foodOnline);
+		    foodFound.save(null,{
+	        	success: function(foodUpdate) {
+	        		response.success(foodUpdate);	
+	        	},
+	        	error: function(err) {
+	        		logger.send_error(logger.subject("updateFood", "updateFood") , err);
+	        		response.error("updateFood error:" + err);
+	        	}	
+	        });
+		});
 });

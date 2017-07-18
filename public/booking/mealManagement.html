@@ -1,0 +1,154 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    
+    <!-- w3c -->
+    <script src="external/w3data.js"></script>
+    
+    <!-- jquery & jquery mobile lib -->
+    <script src="external/jquery-2.2.0.min.js"></script>
+    <script src="external/jquery.printElement.min.js"></script>
+    <script src="external/jquery-ui.js"></script>
+        
+    <!-- bootstrap -->
+    <script src="scripts/bootstrap.min.js"></script>
+    
+    <!-- parse lib -->
+    <script src="scripts/parse-1.6.14.min.js"></script>
+    
+    <!-- handlebars -->
+    <script src="scripts/handlebars-v4.0.5.js"></script>
+    
+    <!-- app's lib -->
+    <script src="js/parse-conn.js"></script>
+    <script src="js/app.js"></script>
+    <script src="js/handlebar-util.js"></script>
+    
+    
+    <!-- jquery mobile style -->
+    <link rel="stylesheet" href="external/jquery-mobile/jquery.mobile-1.4.5.css" />
+    
+   
+    <!-- bootstrap style -->
+    <link rel="stylesheet" href="css/bootstrap.min.css" >
+    <link rel="stylesheet" href="css/bootstrap-theme.min.css">
+    
+    <title>國王早餐-餐點管理</title>
+    
+	<script>
+	    $(function(){
+			checkIfUserLoggedIn();
+			
+			loadMeals();
+		});
+	</script>
+	
+		
+</head>
+<body>
+
+    <div w3-include-html="menu.html"></div>
+
+	<script>
+		w3IncludeHTML();
+	</script>
+
+	<div class="panel panel-default" style="width:80%; margin-left: 20px; margin-right: 20px;">
+        <div class="panel-heading">餐點管理</div>
+
+        <div id="printArea"> 
+	        <div class="panel panel-default" style="text-align:center;margin-left: 20px; margin-right: 20px; margin-top: 20px;" >
+	        	
+		        <table class="table table-striped " >
+		            <thead>
+		                <tr align="center">
+		                    <th>#</th>
+		                    <th>餐點</th>
+		                    <th>價錢</th>
+		                    <th>餐點介紹</th>
+		                    <th>更改基本資料</th>
+		                    <th>更換圖檔</th>
+		                </tr>
+		            </thead>
+		            
+		            <tbody id="mealTableBody"></tbody>
+		        </table>
+	        </div>
+        </div>
+    </div>	
+   
+   
+    <div class="container">
+        
+        
+         <!-- Modal -->
+		  <div class="modal fade" id="editModal" role="dialog">
+		    <div class="modal-dialog">
+		    
+		      <!-- Modal content-->
+		      <div class="modal-content">
+		        <div class="modal-header">
+		          <button type="button" class="close" data-dismiss="modal">&times;</button>
+		          <h4 class="modal-title">修改餐點資料</h4>
+		        </div>
+		        <div class="modal-body">
+		        	<div class="form-inline">
+		        		<label for="foodName">餐點名稱:</label>
+		        		<input type="text"  id="foodNameUpdate">
+		        	</div>
+		        	<div class="form-inline">
+		        		<label for="price">價錢:</label>
+		        		<input type="text"  id="priceUpdate">
+		        	</div>
+		        	<div class="form-inline">
+		        		<label for="price">餐點介紹:</label>
+		        		<input type="text"  id="briefUpdate">
+		        	</div>
+		        	<div class="form-inline">
+		        		<label for="price">上架:</label>
+		        		<input type="checkbox"  id="onlineUpdate">
+		        	</div>
+		        	<input type="hidden" id="foodIdUpdate">
+		        </div>
+		        <div class="modal-footer">
+		          <button type="button" class="btn btn-default"  id="saveFood">Save</button>
+		        </div>
+		      </div>
+		      
+		    </div>
+		  </div>
+        
+    </div>
+    
+   
+    
+        
+    
+    
+    <script id="mealCollection-template" type="text/x-handlebars-template">
+		{{#each this}}
+			<tr>
+                <td>{{ plus1 @index }}</td>
+                <td>{{ mealName }}</td>
+                <td>${{ price }}</td>
+                <td>{{ brief }}</td>
+                <td>
+                	<a href="#" onclick="openModal(this)" objectid="{{objectId}}" food-name="{{mealName}}" price="{{price}}" brief="{{brief}}" online="{{online}}">
+                		<i class="fa fa-edit" style="margin-left: 10px; color: orange; opacity: 1;"></i>
+                	</a>
+                </td>
+                <td>
+                	<a href="updateFoodProfile.html">
+                		<i class="fa fa-edit" style="margin-left: 10px; color: orange; opacity: 1;"></i>
+                	</a>	
+                </td>
+            </tr>
+		{{/each}}
+	</script>
+    
+
+    
+</body>
+</html>
