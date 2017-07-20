@@ -229,7 +229,6 @@ $(document).on("click", "#saveFood", function(event) {
     var foodBrief = $("#briefUpdate").val();
     var foodOnline = ($('#onlineUpdate').is(":checked"));
     
-    /*
     Parse.Cloud.run("updateFood", 
 		{	
 			foodId: foodId,
@@ -247,5 +246,5 @@ $(document).on("click", "#saveFood", function(event) {
 	 		console.log("error:" + error.message);
 		}
 	});
-	*/
+	
 });

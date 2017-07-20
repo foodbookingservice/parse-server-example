@@ -55,8 +55,13 @@
 		w3IncludeHTML();
 	</script>
 
-	<div class="panel panel-default" style="width:80%; margin-left: 20px; margin-right: 20px;">
-        <div class="panel-heading">餐點管理</div>
+	<div class="panel panel-default" style="width:70%; margin-left: 20px; margin-right: 20px;">
+        <div style="text-align:right">
+        	<a href="createStoreProfile.html">+ 新增餐點</a>
+        </div>
+        <div class="panel-heading">
+        	餐點管理
+        </div>
 
         <div id="printArea"> 
 	        <div class="panel panel-default" style="text-align:center;margin-left: 20px; margin-right: 20px; margin-top: 20px;" >
@@ -68,6 +73,7 @@
 		                    <th>餐點</th>
 		                    <th>價錢</th>
 		                    <th>餐點介紹</th>
+		                    <th>上架</th>
 		                    <th>更改基本資料</th>
 		                    <th>更換圖檔</th>
 		                </tr>
@@ -85,7 +91,7 @@
         
          <!-- Modal -->
 		  <div class="modal fade" id="editModal" role="dialog">
-		    <div class="modal-dialog">
+		    <div class="modal-dialog" style="width:90%">
 		    
 		      <!-- Modal content-->
 		      <div class="modal-content">
@@ -134,6 +140,7 @@
                 <td>{{ mealName }}</td>
                 <td>${{ price }}</td>
                 <td>{{ brief }}</td>
+                <td>{{ online }}</td>
                 <td>
                 	<a href="#" onclick="openModal(this)" objectid="{{objectId}}" food-name="{{mealName}}" price="{{price}}" brief="{{brief}}" online="{{online}}">
                 		<i class="fa fa-edit" style="margin-left: 10px; color: orange; opacity: 1;"></i>

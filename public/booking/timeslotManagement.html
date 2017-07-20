@@ -1,0 +1,115 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    
+    <!-- w3c -->
+    <script src="external/w3data.js"></script>
+    
+    <!-- jquery & jquery mobile lib -->
+    <script src="external/jquery-2.2.0.min.js"></script>
+    <script src="external/jquery.printElement.min.js"></script>
+    <script src="external/jquery-ui.js"></script>
+        
+    <!-- bootstrap -->
+    <script src="scripts/bootstrap.min.js"></script>
+    
+    <!-- parse lib -->
+    <script src="scripts/parse-1.6.14.min.js"></script>
+    
+    <!-- handlebars -->
+    <script src="scripts/handlebars-v4.0.5.js"></script>
+    
+    <!-- easyui -->
+    <script src="external/easyui/jquery.easyui.min.js"></script>
+  	<script src="external/easyui/datagrid-filter.js"></script>
+  	<script src="external/easyui/datagrid-cellediting.js"></script>
+    
+    <!-- timepicker -->
+    <script src="external/jquery.timepicker/jquery.timepicker.min.js"></script>
+    <link rel="stylesheet" href="external/jquery.timepicker/jquery.timepicker.css">
+    
+    
+    <!-- app's lib -->
+    <script src="js/parse-conn.js"></script>
+    <script src="js/app.js"></script>
+    <script src="js/timeslot-related.js"></script>
+    <script src="js/handlebar-util.js"></script>
+    <script src="js/action_success_message.js"></script>
+    
+    <!-- jquery mobile style -->
+    <link rel="stylesheet" href="external/jquery-mobile/jquery.mobile-1.4.5.css" />
+    
+   
+    <!-- bootstrap style -->
+    <link rel="stylesheet" href="css/bootstrap.min.css" >
+    <link rel="stylesheet" href="css/bootstrap-theme.min.css">
+    
+    <!-- easyui -->
+    <link rel="stylesheet" type="text/css" href="css/easyui/easyui.css">
+	<link rel="stylesheet" type="text/css" href="css/icon.css">
+    
+    <title>國王早餐-送餐時段管理</title>
+    
+	<script>
+	    $(function(){
+			checkIfUserLoggedIn();
+			
+			init_datagrid();
+		});
+	</script>
+	
+		
+</head>
+<body>
+
+    <div w3-include-html="menu.html"></div>
+
+	<script>
+		w3IncludeHTML();
+	</script>
+
+	<div class="panel panel-default" style="width:70%; margin-left: 20px; margin-right: 20px;">
+        
+    	<div id="create_loading" style="display:none">
+			<img src="ajax-loader.gif">
+		</div>
+	    <P>
+	    	
+	    <div id="createTimeslotDiv" class="easyui-panel" title="新增時段" style="width:500px;height:100px;padding:10px;">
+	        
+	        <form id="createTimeslot" data-options="novalidate:true" method="post">
+	            <table>
+	            	<tr>
+	                    <td>* 選擇時段:&nbsp;</td>
+	                    <td>
+	                    	<input id="interval" class="easyui-timespinner"  style="width:80px;" data-options="min:'06:00', max:'18:00', showSeconds:false, required:true">	
+	                    </td>
+	                    <td>
+	                    	&nbsp;&nbsp;
+	                    </td>
+	                </tr>
+	                <tr>
+	                    <td>* 此時段最大產量:&nbsp;</td>
+	                    <td>
+	                    	<input id="capacity" class="easyui-numberbox"  style="width:80px;" data-options="min:1,max:50,required:true">	
+	                    </td>
+	                    <td>
+	                    	&nbsp;&nbsp;<a href="javascript:void(0)" class="easyui-linkbutton" id="submitTimeslot">Submit</a>
+	                    </td>
+	                </tr>
+	            </table>
+	        </form>
+	    
+	    </div>
+	    	
+    </div>	
+   <P>
+   	<div class="panel panel-default" style="width:70%; margin-left: 20px; margin-right: 20px;">
+   		<table id="dg" title="時段資料表" style="width:500px;height:300px" >
+		</table>
+   	</div>
+    
+</body>
+</html>
