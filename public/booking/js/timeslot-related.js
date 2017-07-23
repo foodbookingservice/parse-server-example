@@ -19,13 +19,20 @@ $(document).on("click", "#submitTimeslot", function(event) {
 function init_datagrid() {
 	var dg = $('#dg').datagrid({
         pagination: false,
-        remoteFilter: true,
         rownumbers: true,
         striped: true,
-        multiSort:true,
+        multiSort:false,
+        sortName: 'sinceMidnight',
+        remoteSort: false,
         columns:[[
                   {field:'objectId',title:'ID',width:80, hidden:true},
-                  {field:'interval',title:'時段',halign:'center',width:120,sortable:'true'},
+                  {field:'sinceMidnight',title:'sinceMidnight',width:100, hidden:true,sortable:'true'},
+                  {field:'interval',title:'時段',halign:'center',width:100},
+                  {field:'capacity',title:'最大產量',halign:'center',width:100,
+                  		editor:{
+                  			type: 'numberbox'
+                  			}
+                  	},
                   {field:'enable',title:'啟用',halign:'center',width:80,
                   		formatter: function(val, row, idx){
                   			return val? "是": "否";
@@ -148,12 +155,15 @@ function commit_backend_create(){
 
 //更新資料
 function commit_backend_update(obj, index, row)  {
+	var dataString = '{ "enable" : ' + row["enable"] + ', ' +  
+					'"capacity" : ' + row["capacity"] + '}';
+					
 	$.ajax({
 		type: 'PUT',
         url: curlURL + "/classes/HBTimeSlot/" + row["objectId"],
         headers:  jsonDic,
         processData: false,
-        data: '{ "enable" : ' + row["enable"] + '}'
+        data: dataString
     }).then(function(queryResult) {
     	row.editing = false;
        	loadData();
